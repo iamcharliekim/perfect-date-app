@@ -30,7 +30,7 @@ main {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	padding-top: 10px;
+	padding-top: 20px;
 }
 
 navbar {
@@ -115,6 +115,7 @@ header h2 {
 
 .event-search-form, .yelp-search-form {
 	width: 100%;
+	max-width: 500px;
 	text-align: center;
 	padding: 20px;
 	display: flex;
@@ -192,6 +193,7 @@ input.location {
 	padding: 10px;
 	width: 95%;
 	color: white;
+	width: 100%
 }
 
 .eventResults:hover, .zomatoResults:hover{
@@ -287,6 +289,11 @@ span.noResultsLocation {
 	font-size: 40px;
 }
 
+.results {
+	width: 95%;
+	max-width: 500px;
+}
+
 .itin-msg {
 	width: 100%;
 	display: flex;
@@ -296,6 +303,7 @@ span.noResultsLocation {
 	border: 2px solid white;
 	border-right: none;
 	border-left: none;
+	margin-bottom: 10px;
 
 }
 .itin-msg h2 {
@@ -305,7 +313,8 @@ span.noResultsLocation {
 }
 
 .date-details {
-	width: 95%;
+	width: 99%;
+	max-width: 500px;
 	color: white;
 	display: flex;
 	flex-direction: column;
@@ -350,7 +359,7 @@ span.noResultsLocation {
 	margin-bottom: 10px;
 	background-color: black;
 	padding: 8px;
-	width: 100%
+	width: 100%;
 }
 
 .date-details button {
@@ -392,6 +401,7 @@ span.noResultsLocation {
 
 .save-date-btn, .share-date-btn {
 	width: 50%;
+	max-width: 250px;
 	padding: 10px;
 	border-radius: 5rem;
 	border: 2px solid #AEFFD8;
