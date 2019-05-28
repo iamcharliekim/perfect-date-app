@@ -227,7 +227,8 @@ $('main').on('click', '.eventResults', (e)=>{
 			} else {
 				throw new Error(response.statusText)
 			}
-		}).then(event =>{		
+		}).then(event =>{	
+			console.log(event)
 			selectedEventObj = {
 				eventName: event.title,
 				eventTime: event.datetime_local,
@@ -238,6 +239,8 @@ $('main').on('click', '.eventResults', (e)=>{
 					lat: event.venue.location.lat,
 					long: event.venue.location.lon
 				},
+				eventVenue: event.venue.name,
+				eventType: event.type,
 				eventLocation: event.venue.display_location,
 				dateCostArr: [Number(eventPrice.substring(2))]
 			}
@@ -380,42 +383,9 @@ $('main').on('click', '.zomatoResults', (e)=>{
 				
 				selectedEventObj.restaurantMenu = resDetails.menu_url
 				selectedEventObj.restaurantDetails = resDetails.url
+				selectedEventObj.restaurantFoodType = resDetails.cuisines
 				
-				const weatherApiKey = '3df5e3cb936985be70ed3a06b4df61b9'
-	
-				let weatherApiEventURL = `https://api.openweathermap.org/data/2.5/weather?lat=${selectedEventObj.eventCoors.lat}&lon=${selectedEventObj.eventCoors.long}&APPID=${weatherApiKey}&units=imperial`
-
-				let weatherApiRestaurantURL = `https://api.openweathermap.org/data/2.5/weather?lat=${selectedEventObj.restaurantCoors.lat}&lon=${selectedEventObj.restaurantCoors.long}&APPID=${weatherApiKey}&units=imperial`
-
-
-
-				fetch(weatherApiEventURL).then(response=>{
-					if (response.status === 200){
-							return response.json()	
-						} else {
-							throw new Error(response.statusText)
-						}
-					}).then(eventWeather =>{
-						console.log(eventWeather)
-
-						selectedEventObj.eventTemp = eventWeather.main.temp
-						selectedEventObj.eventHumidity = eventWeather.main.humidity
-						selectedEventObj.eventDesc = eventWeather.weather[0].description
-					
-					
-					fetch(weatherApiRestaurantURL).then(response=>{
-						if (response.status === 200){
-								return response.json()	
-							} else {
-								throw new Error(response.statusText)
-							}
-						}).then(restaurantWeather =>{
-							console.log(restaurantWeather)
-
-							selectedEventObj.restaurantTemp = restaurantWeather.main.temp
-							selectedEventObj.restaurantHumidity = restaurantWeather.main.humidity
-							selectedEventObj.restaurantDesc = restaurantWeather.weather[0].description
-						
+				
 						
 							let finalPageHTML = `
 						
@@ -426,48 +396,29 @@ $('main').on('click', '.zomatoResults', (e)=>{
 								<div class="date-details">
 
 									<div class="cost">
-										<header><h1>Estimated Total Cost</h1></header>
+										<header><h1>Estimated Total Cost: <span class="costVal">$${selectedEventObj.dateCostArr[0] + selectedEventObj.dateCostArr[1]}</span></h1></header>
 
-										<span class="event-tickets">2 Tickets to Event: $${selectedEventObj.dateCostArr[0]}</span>
-										<span class="dinner-price">Dinner for 2: $${selectedEventObj.dateCostArr[1]}</span>
-										<span class="total-cost">Total Est. Cost: $${selectedEventObj.dateCostArr[0] + selectedEventObj.dateCostArr[1]}</span>
+										<span class="event-tickets"><span class="names">${selectedEventObj.eventName}</span>: <span class="costVal">$${selectedEventObj.dateCostArr[0]}</span></span>
+										<span class="dinner-price"><span class="names">${selectedEventObj.restaurantName}</span>: <span class="costVal">$${selectedEventObj.dateCostArr[1]}</span></span>
+										<span class="total-cost">Total: <span class="costVal">$${selectedEventObj.dateCostArr[0] + selectedEventObj.dateCostArr[1]}</span></span>
 									</div>
 
 									<div class="event-restaurant-details-wrapper">
 										<div class="event-details">
-											<header><h1>Event Details</h1></header>
-											<span class="event-name">${selectedEventObj.eventName}</span>
+											<header><h1><span class="event-name">${selectedEventObj.eventName}</span></h1></header>
+											
+											<span class="event-venue">${selectedEventObj.eventVenue}</span>
 											<span class="event-address">${selectedEventObj.eventAddress}</span>
 											<span class="event-time">${selectedEventObj.eventTime}</span>
-
-											<div class="eventWeather weather-section">
-												<header class="weather-header">Weather</header>
-												<div class="tempAndDesc">
-													<span class="temp">${selectedEventObj.eventTemp}°F</span>
-													<span class="desc"><i>${selectedEventObj.eventDesc}</i></span>
-												</div>
-												<span class="humidity">Humidity: ${selectedEventObj.eventHumidity}%</span>
-											</div>
-
 											<a href="${selectedEventObj.eventDetailsLink}"><button class="event-link">Details</button></a>
-
 										</div>
 
 										<div class="restaurant-details">
-											<header><h1>Restaurant Details</h1></header>
-											<span class="restaurant-name">${selectedEventObj.restaurantName}</span>
+											<header><h1><span class="restaurant-name">${selectedEventObj.restaurantName}</span></h1></header>
+											<span class="restaurant-foodType">${selectedEventObj.restaurantFoodType}</span>
 											<span class="restaurant-address">${selectedEventObj.restaurantAddress}</span>
 
-											<div class="restaurantWeather weather-section">
-												<header class="weather-header">Weather</header>
-												<div class="tempAndDesc">
-													<span class="temp">${selectedEventObj.restaurantTemp}°F</span>
-													<span class="desc"><i>${selectedEventObj.restaurantDesc}</i></span>
-												</div>
-												<span class="humidity">Humidity: ${selectedEventObj.restaurantHumidity}%</span>
-											</div>
-
-												<div class="restaurant-btns-wrapper">
+										<div class="restaurant-btns-wrapper">
 													<a href="${selectedEventObj.restaurantMenu}"><button class="restaurant-menu">Menu</button></a>
 													<a href="${selectedEventObj.restaurantDetails}"><button class="restaurant-link">Details</button></a>
 												</div>
@@ -485,14 +436,3 @@ $('main').on('click', '.zomatoResults', (e)=>{
 							appendPage(finalPageHTML)
 						})
 					})
-			})
-})
-
-
-
-
-
-
-
-
-

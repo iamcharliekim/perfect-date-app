@@ -337,6 +337,9 @@ span.noResultsLocation {
 	font-size: 15px;
 	border-bottom: 2px solid white;
 	margin-bottom: 10px;
+	background-color: black;
+	padding: 8px;
+	width: 100%
 }
 
 .date-details button {
@@ -413,4 +416,70 @@ span.noResultsLocation {
 
 .weather-section {
 	margin-top: 10px;	
+}
+
+
+.event-tickets, .dinner-price, .total-cost, .event-venue, .event-address, .event-time {
+	margin: 5px;
+	background-color: black;
+}
+
+
+.costVal {
+	background-color: white;
+	color: black;
+	font-size: 20px;
+	padding: 0px;
+		
+}
+
+span.total-cost {
+	border-top: 2px solid #AEFFD8;
+	padding-top: 10px
+}
+
+span.names {
+	background-color: black;
+	font-weight: bolder;
+	font-size: 16px;
+		padding: 5px;
+
+}
+
+span.event-venue {
+	font-size: 28px;
+		padding: 5px;
+
+}
+
+span.event-address, span.restaurant-address {
+	color: #CEE5F2;
+	font-size: 22px;
+	background-color: black;
+		padding: 5px;
+
+}
+
+
+span.event-time {
+	color: white;
+	background-color: black;
+	font-size: 18px;
+	margin-top: 5px;
+	padding: 5px;
+}
+
+div.cost, div.event-details, div.restaurant-details {
+	border: 2px solid white;
+}
+
+div.restaurant-details {
+	margin-top: 20px
+}
+
+span.restaurant-foodType {
+	background-color: black;
+	margin-bottom: 10px;
+		padding: 5px;
+
 }
