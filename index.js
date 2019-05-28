@@ -390,13 +390,13 @@ $('main').on('click', '.zomatoResults', (e)=>{
 							let finalPageHTML = `
 						
 								<header class="itin-msg">
-									<h2>May 5th 2019</h2>
+									<h2>${selectedEventObj.eventTime}</h2>
 								</header>
 
 								<div class="date-details">
 
 									<div class="cost">
-										<header><h1>Estimated Total Cost: <span class="costVal">$${selectedEventObj.dateCostArr[0] + selectedEventObj.dateCostArr[1]}</span></h1></header>
+										<header><h1>Estimated Total Cost</h1></header>
 
 										<span class="event-tickets"><span class="names">${selectedEventObj.eventName}</span>: <span class="costVal">$${selectedEventObj.dateCostArr[0]}</span></span>
 										<span class="dinner-price"><span class="names">${selectedEventObj.restaurantName}</span>: <span class="costVal">$${selectedEventObj.dateCostArr[1]}</span></span>

@@ -291,8 +291,11 @@ span.noResultsLocation {
 	width: 100%;
 	display: flex;
 	flex-direction: row;
-	justify-content: flex-start;
+	justify-content: center;
 	background-color: black;
+	border: 2px solid white;
+	border-right: none;
+	border-left: none;
 
 }
 .itin-msg h2 {
@@ -306,8 +309,10 @@ span.noResultsLocation {
 	color: white;
 	display: flex;
 	flex-direction: column;
-	
-	padding: 0px 0
+	align-items: center;
+	padding: 0px 0;
+		justify-content: center;
+
 }
 
 
@@ -316,7 +321,11 @@ span.noResultsLocation {
 }
 
 .event-restaurant-details-wrapper {
-
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
 }
 
 .weather, .cost, .event-details, .restaurant-details {
@@ -328,6 +337,8 @@ span.noResultsLocation {
 	font-size: 20px;
 	width: 100%;
 }
+
+.event
 
 .desc {
 	
@@ -354,6 +365,7 @@ span.noResultsLocation {
 	font-size: 18px;
 	cursor: pointer;
 	margin-top: 10px;
+	margin-bottom: 10px;
 	
 }
 
@@ -429,13 +441,20 @@ span.noResultsLocation {
 	background-color: white;
 	color: black;
 	font-size: 20px;
-	padding: 0px;
+	padding: 5px;
 		
 }
 
 span.total-cost {
 	border-top: 2px solid #AEFFD8;
-	padding-top: 10px
+	padding-top: 10px;
+	font-size: 30px;
+	width: 95%
+}
+
+span.total-cost span.costVal {
+	font-size: 30px;
+	padding: 5px
 }
 
 span.names {
@@ -471,10 +490,11 @@ span.event-time {
 
 div.cost, div.event-details, div.restaurant-details {
 	border: 2px solid white;
+	background-color:black;
+	padding: 5px;
 }
 
 div.restaurant-details {
-	margin-top: 20px
 }
 
 span.restaurant-foodType {
