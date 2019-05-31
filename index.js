@@ -38,9 +38,6 @@ let selectedEventObj = {
 				restaurantFoodType: ''
 }
 
-
-
-
 let currentLocation
 
 let eventPrice
@@ -244,13 +241,10 @@ function mainPageGenerator(){
 }
 
 function appendPage(page){
-		console.log(historyCounter)
-	backBtnDisabler()
-	forwardBtnDisable()
-	
-		historyCounter++;	
+	backBtnDisabler();
+ 	forwardBtnDisable();
+	historyCounter++;	
 
-	
 	$('main').empty()
 	$('main').append(page)
 	console.log(historyCounter)
@@ -269,8 +263,6 @@ function appendPage(page){
 $('main').on('click', '.start-btn', (e)=>{
 	appendPage(history[historyCounter])
 	geoLocate()
-	
-	
 })
 
 
@@ -281,7 +273,9 @@ $('main').on('submit', '.yelp-search-form', (e)=>{
 			
 	const zomatoApiKey = '9fc6bb49836d20f169da8151581bde82'
 	
-	let zomatoApiURL = `https://developers.zomato.com/api/v2.1/search?q=${zomatoSearchQuery}&lat=${yelpLat}&lon=${yelpLong}&radius=1000`
+	let zomatoRadius = 1609.34
+	
+	let zomatoApiURL = `https://developers.zomato.com/api/v2.1/search?q=${zomatoSearchQuery}&lat=${selectedEventObj.eventCoors.lat}&lon=${selectedEventObj.eventCoors.long}&radius=${zomatoRadius}`
 	
 	const headers = {
 		"headers": {
@@ -451,10 +445,7 @@ $('main').on('click', '.eventResults > .event-select', (e)=>{
 	
 		// MOVE USER TO NEXT-PAGE
 		appendPage(foodAndDrinksPageGenerator());
-		console.log('FoodAndDrinksPage loaded')
-		
-		 yelpLat = selectedEventObj.eventCoors.lat
-		 yelpLong = selectedEventObj.eventCoors.long
+
 		 yelpRadius = 1609.34
 		 yelpLocation = selectedEventObj.eventLocation
 		
