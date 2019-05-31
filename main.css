@@ -209,6 +209,29 @@ input.event {
 	
 }
 
+.radius-label{
+	width: 100%;
+	color: white;
+	display: flex;
+	align-items: center;
+	justify-content: flex-start;
+	font-size: 20px;
+	
+
+}
+
+input.radius {
+	width: 48px;
+	padding: 10px;
+	height: 10px;
+	border-radius: 0;
+	margin: 10px auto;
+	margin-left: 10px;
+	margin-right: 10px;
+	
+	
+}
+
 input.location {
 	margin: 10px auto;
 }
@@ -257,7 +280,8 @@ input.location {
 }
 
 .eventResults header, .zomatoResults header {
-	font-size: 20px
+	font-size: 20px;
+	width: 90%
 }
 
 .event-select {

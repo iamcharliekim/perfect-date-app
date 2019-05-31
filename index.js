@@ -2,15 +2,15 @@ const seatGeekApiKey = 'MTY3NTIzOTB8MTU1ODY0MzMzOS41Mw'
 let seatGeekURLGeoLocation = `https://api.seatgeek.com/2/events?client_id=${seatGeekApiKey}&geoip=true`
 
 const googleGeoCodeApiKey = 'AIzaSyDOvfuKaaRuYocVQWNl9ICi3wadIephDyc'
-
-const openWeatherApiKey = '3df5e3cb936985be70ed3a06b4df61b9'
-
+const googleApiKey = `AIzaSyDOvfuKaaRuYocVQWNl9ICi3wadIephDyc`
+				
 let yelpLat
 let yelpLong 
 let yelpRadius
 let yelpLocation
 
 let selectedEventObj = {
+				origLocation: '',
 				eventSelected: false,
 				eventName: '',
 				eventTime: '',
@@ -38,6 +38,11 @@ let selectedEventObj = {
 				restaurantFoodType: ''
 }
 
+
+
+
+let currentLocation
+
 let eventPrice
 
 let showMenu = false
@@ -54,7 +59,7 @@ function backBtnDisabler(){
 }
 
 function forwardBtnDisable(){
-	if (historyCounter >= 2){
+	if (historyCounter >= 2 || historyCounter === 0){
 		$('.forward').hide()
 	} else {
 		$('.forward').show()
@@ -75,7 +80,7 @@ function geoLocate(){
 			}
 		}).then(responseJson =>{
 			
-			let currentLocation = responseJson.meta.geolocation.display_name
+			currentLocation = responseJson.meta.geolocation.display_name
 			
 			// SET LOCATION INPUT TO CURRENTLOCATION
 			$('.e-search').val(currentLocation)
@@ -104,9 +109,11 @@ $('main').on('submit', '.event-search-form', (e)=>{
 	
 	let state = $('.e-search').val().split(',')[1].trim()
 	
+	let origLocation = `${city},+${state}`
 	
+	selectedEventObj.origLocation = origLocation;
 	
-	let seatGeekURLcityState = `https://api.seatgeek.com/2/events?client_id=${seatGeekApiKey}&venue.city=${city}&venue.state=${state}`
+	let seatGeekURLcityState = `https://api.seatgeek.com/2/events?client_id=${seatGeekApiKey}&venue.city=${city}&venue.state=${state}&range=5mi`
 	
 	fetch(seatGeekURLcityState).then(response=>{
 		displayLoader();
@@ -117,6 +124,7 @@ $('main').on('submit', '.event-search-form', (e)=>{
 				hideLoader()
 			}
 		}).then(responseJson =>{
+			console.log(responseJson)
 			hideLoader();
 			let eventsArr = responseJson.events
 			let resultDiv
@@ -134,34 +142,58 @@ $('main').on('submit', '.event-search-form', (e)=>{
 				let eventDateTime = eventsArr[i].datetime_local
 				let eventURL = eventsArr[i].url
 				let eventVenue = eventsArr[i].venue.name
-				let eventAddress = `${eventsArr[i].venue.address} ${eventsArr[i].venue.extended_address}`
 				let eventID = eventsArr[i].id
 				
+				
 				eventPrice = `~$${eventsArr[i].stats.average_price*2}`
-				console.log(eventPrice)
 				
 				if (eventPrice === '~$0'){
 					eventPrice = 'N/A'
 				}
 				
-				resultDiv = `
+				let eventLong = eventsArr[i].venue.location.lon
+				let eventLat = eventsArr[i].venue.location.lat
+				
+				const googleApiURL = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${eventLat},${eventLong}&key=${googleGeoCodeApiKey}`
+				console.log(googleApiURL)
+				
+				fetch(googleApiURL).then(response => {
+					if (response.status === 200){
+						return response.json()	
+					} else {
+						throw new Error(response.statusText)
+					}
+
+				}).then(responseJson =>{
+					
+				let eventAddress = responseJson.results[0].formatted_address
+
+				let addressArr = eventAddress.split(' ')
+				let eventAddressURI = addressArr.join('+')
+				let googleMapsLinkURL = `https://www.google.com/maps/dir/?api=1&origin=${origLocation}&destination=${eventAddressURI}`
+					
+					resultDiv = `
 					<div class="eventResults" id=${eventID}>
 						<header>${eventTitle}</header>
 						<input type="checkbox" class="event-select">
 						<span class="eventDateTime">${timeParser(eventDateTime)[0]} @ ${timeParser(eventDateTime)[1]}</span>
 						<div class="event-venue-address">
 							<span class="eventVenue">${eventVenue}</span>
-							<span class="eventAddress">${eventAddress}</span>
+							<span class="eventAddress"><a href="${googleMapsLinkURL}" target="_blank">${eventAddress}</a></span>
 						</div>
 						<span class="event-price">Tickets For Two: ${eventPrice}</span>
 						<a href="${eventURL}" target="_blank"><button class="eventURL">DETAILS</button></a>
 					</div>`
 				
 				$('.results').append(resultDiv)
+				})
+
 
 			}
 		})
 })
+
+
 	
 function entertainmentPageGenerator(){
 	return `	
@@ -178,8 +210,10 @@ function foodAndDrinksPageGenerator(){
 	return `
 		<form action="" class="yelp-search-form">
 			<legend><h2>Let's Find a Spot Nearby For Food and Drinks!</h2></legend>
-
+				
 				<input type="text" class="search-input yelp-queryString" placeholder="Keywords..." id="location">		
+			
+				
 
 				<input type="text" class="search-input location yelp-locations" placeholder="Location" id="location">
 
@@ -258,6 +292,7 @@ function appendPage(page){
 		console.log(historyCounter)
 	backBtnDisabler()
 	forwardBtnDisable()
+	
 		historyCounter++;	
 
 	
@@ -291,7 +326,7 @@ $('main').on('submit', '.yelp-search-form', (e)=>{
 			
 	const zomatoApiKey = '9fc6bb49836d20f169da8151581bde82'
 	
-	let zomatoApiURL = `https://developers.zomato.com/api/v2.1/search?q=${zomatoSearchQuery}&lat=${yelpLat}&lon=${yelpLong}&radius=${yelpRadius}`
+	let zomatoApiURL = `https://developers.zomato.com/api/v2.1/search?q=${zomatoSearchQuery}&lat=${yelpLat}&lon=${yelpLong}&radius=1000`
 	
 	const headers = {
 		"headers": {
@@ -322,13 +357,39 @@ $('main').on('submit', '.yelp-search-form', (e)=>{
 			for (let i = 0 ; i < foodAndDrinkArr.length; i++){
 				let zomatoName = foodAndDrinkArr[i].restaurant.name
 				let zomatoCuisines = foodAndDrinkArr[i].restaurant.cuisines
-				let zomatoAddress = foodAndDrinkArr[i].restaurant.location.address
+							
+				
 				let zomatoMenuURL = foodAndDrinkArr[i].restaurant.menu_url
 				let zomatoDetailsURL = foodAndDrinkArr[i].restaurant.url
 				let zomatoPrice = foodAndDrinkArr[i].restaurant.average_cost_for_two
 				let zomatoRatings = foodAndDrinkArr[i].restaurant.user_rating.aggregate_rating
 				let zomatoRatingsText = foodAndDrinkArr[i].restaurant.user_rating.rating_text
 				let zomatoID = foodAndDrinkArr[i].restaurant.R.res_id
+				
+				let zomatoLat = foodAndDrinkArr[i].restaurant.location.latitude
+				let zomatoLong = foodAndDrinkArr[i].restaurant.location.longitude
+				
+				console.log(zomatoLong, zomatoLat)
+				
+				const googleApiURL = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${zomatoLat},${zomatoLong}&key=${googleGeoCodeApiKey}`
+				
+				console.log(googleApiURL)
+				
+				fetch(googleApiURL).then(response => {
+					if (response.status === 200){
+						return response.json()	
+					} else {
+						throw new Error(response.statusText)
+					}
+
+				}).then(responseJson =>{
+					console.log(responseJson)
+				let zomatoAddress = responseJson.results[0].formatted_address
+				let addressArr = zomatoAddress.split(' ')
+				let zomatoAddressURI = addressArr.join('+')
+				let eventAddressURI = selectedEventObj.eventAddress.split(' ').join('+')
+				let googleMapsLinkURL = `https://www.google.com/maps/dir/?api=1&origin=${eventAddressURI}&destination=${zomatoAddressURI}`	
+					
 				
 
 				let resultDiv = `
@@ -341,7 +402,7 @@ $('main').on('submit', '.yelp-search-form', (e)=>{
 						<span class="eventDateTime"><i>${zomatoCuisines}</i></span>
 						
 						<div class="event-venue-address">
-							<span class="eventAddress">${zomatoAddress}</span>
+							<a href="${googleMapsLinkURL}" target="_blank"><span class="eventAddress">${zomatoAddress}</span></a>
 						</div>
 						<span class="zomato-price">Cost For Two: <strong>$${zomatoPrice}</strong></span>
 						
@@ -352,10 +413,11 @@ $('main').on('submit', '.yelp-search-form', (e)=>{
 					</div>`
 
 				$('.results').append(resultDiv)
-			}
+			})
 		
 		
-	})
+	}
+})
 })
 
 
@@ -387,14 +449,32 @@ $('main').on('click', '.eventResults > .event-select', (e)=>{
 				hideLoader();
 			}
 		}).then(event =>{	
+			
 			hideLoader();
-		
 			console.log(event)
+			
+			let eventLat = event.venue.location.lat
+			let eventLong = event.venue.location.lon
+			
+			const googleApiURL = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${eventLat},${eventLong}&key=${googleGeoCodeApiKey}`
+				
+				console.log(googleApiURL)
+				
+				fetch(googleApiURL).then(response => {
+					if (response.status === 200){
+						return response.json()	
+					} else {
+						throw new Error(response.statusText)
+					}
+
+				}).then(responseJson =>{
+					console.log(responseJson)
+		
 			selectedEventObj = {
 				eventSelected: true,
 				eventName: event.title,
 				eventTime: event.datetime_local,
-				eventAddress: `${event.venue.address} ${event.venue.extended_address}`,
+				eventAddress: responseJson.results[0].formatted_address,
 				eventID: selectedEventID,
 				eventDetailsLink: event.url,
 				eventCoors: {
@@ -420,7 +500,7 @@ $('main').on('click', '.eventResults > .event-select', (e)=>{
 		
 		 yelpLat = selectedEventObj.eventCoors.lat
 		 yelpLong = selectedEventObj.eventCoors.long
-		 yelpRadius = 8046.72
+		 yelpRadius = 1609.34
 		 yelpLocation = selectedEventObj.eventLocation
 		
 		
@@ -429,6 +509,8 @@ $('main').on('click', '.eventResults > .event-select', (e)=>{
 
 	})
 })
+})
+
 
 $('main').on('click', '.zomatoResults > .event-select', (e)=>{
 	
@@ -472,20 +554,45 @@ $('main').on('click', '.zomatoResults > .event-select', (e)=>{
 			
 				console.log(resDetails)
 			
-				selectedEventObj.restaurantName = resDetails.name
-				selectedEventObj.restaurantAddress = resDetails.location.address
-				selectedEventObj.restaurantCost = Number(resDetails.average_cost_for_two)
-				selectedEventObj.restaurantCoors = {
-						lat: Number(resDetails.location.latitude),
-						long: Number(resDetails.location.longitude)
-				}
+				let zomatoLong = resDetails.location.longitude
+				let zomatoLat = resDetails.location.latitude
 				
-				selectedEventObj.restaurantMenu = resDetails.menu_url
-				selectedEventObj.restaurantDetails = resDetails.url
-				selectedEventObj.restaurantFoodType = resDetails.cuisines
-				selectedEventObj.restaurantSelected = true
+				console.log(zomatoLong, zomatoLat)
 				
+				const googleApiURL = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${zomatoLat},${zomatoLong}&key=${googleGeoCodeApiKey}`
 				
+				console.log(googleApiURL)
+				
+				fetch(googleApiURL).then(response => {
+					if (response.status === 200){
+						return response.json()	
+					} else {
+						throw new Error(response.statusText)
+					}
+
+				}).then(responseJson =>{
+					console.log(responseJson)
+					let zomatoAddress = responseJson.results[0].formatted_address
+
+					let restaurantAddressURI = zomatoAddress.split(' ').join('+')
+					let eventAddressURI = selectedEventObj.eventAddress.split(' ').join('+')
+					let restaurantGoogleMapsLinkURL = `https://www.google.com/maps/dir/?api=1&origin=${eventAddressURI}&destination=${restaurantAddressURI}`
+					
+					let eventGoogleMapsLinkURL = `https://www.google.com/maps/dir/?api=1&origin=${selectedEventObj.origLocation}&destination=${eventAddressURI}`	
+
+
+					selectedEventObj.restaurantName = resDetails.name
+					selectedEventObj.restaurantAddress = zomatoAddress
+					selectedEventObj.restaurantCost = Number(resDetails.average_cost_for_two)
+					selectedEventObj.restaurantCoors = {
+							lat: Number(resDetails.location.latitude),
+							long: Number(resDetails.location.longitude)
+					}
+				
+					selectedEventObj.restaurantMenu = resDetails.menu_url
+					selectedEventObj.restaurantDetails = resDetails.url
+					selectedEventObj.restaurantFoodType = resDetails.cuisines
+					selectedEventObj.restaurantSelected = true
 						
 							 finalPageHTML = `
 						
@@ -507,8 +614,11 @@ $('main').on('click', '.zomatoResults > .event-select', (e)=>{
 										<div class="event-details">
 											<header><h1><span class="event-name">${selectedEventObj.eventName}</span></h1></header>
 											
+										
 											<span class="event-venue">${selectedEventObj.eventVenue}</span>
+										<a href="${eventGoogleMapsLinkURL}" target="_blank">
 											<span class="event-address">${selectedEventObj.eventAddress}</span>
+										</a>
 											<span class="event-time">${timeParser(selectedEventObj.eventTime)[0]} @ ${timeParser(selectedEventObj.eventTime)[1]}</span>
 											<a href="${selectedEventObj.eventDetailsLink}"><button class="event-link">Details</button></a>
 										</div>
@@ -516,7 +626,10 @@ $('main').on('click', '.zomatoResults > .event-select', (e)=>{
 										<div class="restaurant-details">
 											<header><h1><span class="restaurant-name">${selectedEventObj.restaurantName}</span></h1></header>
 											<span class="restaurant-foodType">${selectedEventObj.restaurantFoodType}</span>
+										<a href="${restaurantGoogleMapsLinkURL}" target="_blank">
+
 											<span class="restaurant-address">${selectedEventObj.restaurantAddress}</span>
+										</a>
 
 										<div class="restaurant-btns-wrapper">
 													<a href="${selectedEventObj.restaurantMenu}"><button class="restaurant-menu">Menu</button></a>
@@ -536,6 +649,8 @@ $('main').on('click', '.zomatoResults > .event-select', (e)=>{
 							console.log(selectedEventObj)
 						})
 					})
+})
+
 
 
 $('.hamburger').on('click', (e)=>{
@@ -552,6 +667,7 @@ $('.hamburger').on('click', (e)=>{
 })
 
 $('.menu .home').on('click', (e)=>{
+	historyCounter = 0;
 	appendPage(mainPageGenerator())
 	$('.menu').hide()
 	$('main').show()
