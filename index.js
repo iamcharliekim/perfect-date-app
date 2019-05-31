@@ -130,6 +130,7 @@ $('main').on('submit', '.event-search-form', (e)=>{
 			let resultDiv
 
 			if (eventsArr.length === 0){
+				
 				 resultDiv = `
 						<div class="eventResults noResults">
 							<header>No listed events in <span class="noResultsLocation">${city}, ${state}</span></header>
@@ -179,9 +180,9 @@ $('main').on('submit', '.event-search-form', (e)=>{
 						<span class="eventDateTime">${timeParser(eventDateTime)[0]} @ ${timeParser(eventDateTime)[1]}</span>
 						<div class="event-venue-address">
 							<span class="eventVenue">${eventVenue}</span>
-							<span class="eventAddress"><a href="${googleMapsLinkURL}" target="_blank">${eventAddress}</a></span>
+							<span class="eventAddress"><a href="${googleMapsLinkURL}" target="_blank" class="google-address">${eventAddress}</a></span>
 						</div>
-						<span class="event-price">Tickets For Two: ${eventPrice}</span>
+						<span class="event-price">Tickets (2): <span class="eventCostVal">${eventPrice}</span></span>
 						<a href="${eventURL}" target="_blank"><button class="eventURL">DETAILS</button></a>
 					</div>`
 				
@@ -228,52 +229,6 @@ function foodAndDrinksPageGenerator(){
 		</div>`
 }
 
-function finalPageGenerator(){
-
-	return `
-	<header class="itin-msg">
-									<h2>${selectedEventObj.eventTime}</h2>
-								</header>
-
-								<div class="date-details">
-
-									<div class="cost">
-										<header><h1>Estimated Total Cost</h1></header>
-
-										<span class="event-tickets"><span class="names">${selectedEventObj.eventName}</span>: <span class="costVal">$${selectedEventObj.eventCost}</span></span>
-										<span class="dinner-price"><span class="names">${selectedEventObj.restaurantName}</span>: <span class="costVal">$${selectedEventObj.restaurantCost}</span></span>
-										<span class="total-cost">Total: <span class="costVal">$${selectedEventObj.eventCost + selectedEventObj.restaurantCost}</span></span>
-									</div>
-
-									<div class="event-restaurant-details-wrapper">
-										<div class="event-details">
-											<header><h1><span class="event-name">${selectedEventObj.eventName}</span></h1></header>
-											
-											<span class="event-venue">${selectedEventObj.eventVenue}</span>
-											<span class="event-address">${selectedEventObj.eventAddress}</span>
-											<span class="event-time">${selectedEventObj.eventTime}</span>
-											<a href="${selectedEventObj.eventDetailsLink}"><button class="event-link">Details</button></a>
-										</div>
-
-										<div class="restaurant-details">
-											<header><h1><span class="restaurant-name">${selectedEventObj.restaurantName}</span></h1></header>
-											<span class="restaurant-foodType">${selectedEventObj.restaurantFoodType}</span>
-											<span class="restaurant-address">${selectedEventObj.restaurantAddress}</span>
-
-										<div class="restaurant-btns-wrapper">
-													<a href="${selectedEventObj.restaurantMenu}"><button class="restaurant-menu">Menu</button></a>
-													<a href="${selectedEventObj.restaurantDetails}"><button class="restaurant-link">Details</button></a>
-												</div>
-										</div>
-
-									</div>	
-
-									</div>
-
-										<div class="date-details-btn-wrapper">
-											<button class="share-date-btn">Share</button>
-										</div>`
-}
 
 function mainPageGenerator(){
 	return `<div class="hero">
@@ -397,14 +352,14 @@ $('main').on('submit', '.yelp-search-form', (e)=>{
 						<header>${zomatoName}</header>
 						<input type="checkbox" class="event-select">
 
-						<span class="zomato-ratings">Ratings: <strong>${zomatoRatings}/5</strong></span>
-
 						<span class="eventDateTime"><i>${zomatoCuisines}</i></span>
+
+						<span class="zomato-ratings">Ratings: <strong>${zomatoRatings}/5</strong></span>
 						
 						<div class="event-venue-address">
-							<a href="${googleMapsLinkURL}" target="_blank"><span class="eventAddress">${zomatoAddress}</span></a>
+							<span class="eventAddress"><a href="${googleMapsLinkURL}" target="_blank" class="google-address">${zomatoAddress}</a></span>
 						</div>
-						<span class="zomato-price">Cost For Two: <strong>$${zomatoPrice}</strong></span>
+						<span class="zomato-price">Cost For Two: <strong>~$${zomatoPrice}</strong></span>
 						
 						<div class="result-btns-wrapper">
 							<a href="${zomatoMenuURL}" target="_blank"><button class="eventURL">MENU</button></a>
@@ -597,7 +552,7 @@ $('main').on('click', '.zomatoResults > .event-select', (e)=>{
 							 finalPageHTML = `
 						
 								<header class="itin-msg">
-									<h2>${timeParser(selectedEventObj.eventTime)[0]} @ ${timeParser(selectedEventObj.eventTime)[1]}</h2>
+									<h2>Date Summary</h2>
 								</header>
 
 								<div class="date-details">
@@ -610,26 +565,32 @@ $('main').on('click', '.zomatoResults > .event-select', (e)=>{
 										<span class="total-cost">Total: <span class="costVal">$${Number(selectedEventObj.eventCost + selectedEventObj.restaurantCost)}</span></span>
 									</div>
 
+
+
 									<div class="event-restaurant-details-wrapper">
 										<div class="event-details">
-											<header><h1><span class="event-name">${selectedEventObj.eventName}</span></h1></header>
-											
+											<header>
+												<h1>
+													<span class="event-name">${selectedEventObj.eventName}</span>
+												</h1>
+											</header>
+
+										<div class="event-venue-address">
+											<span class="eventVenue">${selectedEventObj.eventVenue}</span>
+										<span class="eventAddress"><a href="${eventGoogleMapsLinkURL}" target="_blank" class="google-address">
+											${selectedEventObj.eventAddress}</a></span>
+										</div>
 										
-											<span class="event-venue">${selectedEventObj.eventVenue}</span>
-										<a href="${eventGoogleMapsLinkURL}" target="_blank">
-											<span class="event-address">${selectedEventObj.eventAddress}</span>
-										</a>
 											<span class="event-time">${timeParser(selectedEventObj.eventTime)[0]} @ ${timeParser(selectedEventObj.eventTime)[1]}</span>
 											<a href="${selectedEventObj.eventDetailsLink}"><button class="event-link">Details</button></a>
 										</div>
 
 										<div class="restaurant-details">
 											<header><h1><span class="restaurant-name">${selectedEventObj.restaurantName}</span></h1></header>
-											<span class="restaurant-foodType">${selectedEventObj.restaurantFoodType}</span>
-										<a href="${restaurantGoogleMapsLinkURL}" target="_blank">
-
-											<span class="restaurant-address">${selectedEventObj.restaurantAddress}</span>
-										</a>
+											<span class="restaurant-foodType"><i>${selectedEventObj.restaurantFoodType}</i></span>
+										<span class="restaurant-address">
+											<a href="${restaurantGoogleMapsLinkURL}" target="_blank" class="google-address">${selectedEventObj.restaurantAddress}</a></span>
+										
 
 										<div class="restaurant-btns-wrapper">
 													<a href="${selectedEventObj.restaurantMenu}"><button class="restaurant-menu">Menu</button></a>
@@ -641,9 +602,7 @@ $('main').on('click', '.zomatoResults > .event-select', (e)=>{
 
 									</div>
 
-										<div class="date-details-btn-wrapper">
-											<button class="share-date-btn">Share</button>
-										</div>`
+										`
 							
 							appendPage(finalPageHTML)
 							console.log(selectedEventObj)
@@ -667,6 +626,14 @@ $('.hamburger').on('click', (e)=>{
 })
 
 $('.menu .home').on('click', (e)=>{
+	historyCounter = 0;
+	appendPage(mainPageGenerator())
+	$('.menu').hide()
+	$('main').show()
+	
+})
+
+$('.home-logo').on('click', (e)=>{
 	historyCounter = 0;
 	appendPage(mainPageGenerator())
 	$('.menu').hide()

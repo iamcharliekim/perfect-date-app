@@ -22,7 +22,12 @@ body {
 }
 
 navbar {
-	height: 10%
+	height: 10%;
+	
+}
+
+.home-logo {
+	cursor: pointer;
 }
 
 main {
@@ -30,8 +35,9 @@ main {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	padding-top: 20px;
-	position: relative
+	padding-top: 10px;
+	position: relative;
+	
 }
 
 .menu {
@@ -81,7 +87,7 @@ navbar {
 	width: 100%;
 	justify-content: space-between;
 	align-items: center;
-	padding: 20px 10px;
+	padding: 10px 10px;
 	border-bottom: 2px solid #CEE5F2 
 	
 }
@@ -125,6 +131,7 @@ header h2 {
 	color: white;
 	font-size: 30px;	
 	text-align: center;
+	margin-top: 30px;
 }
 
 .cta {
@@ -136,6 +143,7 @@ header h2 {
 .start-btn {
 	padding: 20px;
 	width: 80%;
+	max-width: 500px;
 	border-radius: 5rem;
 	font-size: 16px;
 	background:  linear-gradient(
@@ -271,6 +279,20 @@ input.location {
 	width: 100%
 }
 
+span.zomato-ratings {
+	font-weight: bold;
+}
+
+span.zomato-price {
+	font-weight: bold;
+}
+
+.google-address {
+	color: #CEE5F2;
+	cursor: pointer;
+	text-decoration: none;
+}
+
 .event-select:checked {
 	background: linear-gradient(
       rgba(0, 0, 0, 0.8),
@@ -280,8 +302,10 @@ input.location {
 }
 
 .eventResults header, .zomatoResults header {
-	font-size: 20px;
-	width: 90%
+	font-size: 24px;
+	width: 90%;
+	color: #AEFFD8;
+	font-weight: bold;
 }
 
 .event-select {
@@ -290,14 +314,31 @@ input.location {
 	
 }
 
+
+
 .eventResults span, .zomatoResults span {
 	color: white;
 	margin-top: 15px;
 	font-size: 18px
 }
 
+span.eventDateTime {
+	font-weight: bold;
+		color: #CEE5F2;
+}
+
 .eventResults a, .zomatoResults a{
 	margin-top: 15px;
+}
+
+span.eventVenue {
+	font-size: 25px;
+	font-weight: bold;
+	color: white;
+}
+
+.zomatoResults .google-address {
+	margin: 0
 }
 
 .event-venue-address {
@@ -309,6 +350,17 @@ input.location {
 
 .event-venue-address span {
 	margin: 0
+}
+
+span.event-price {
+	font-weight: bold;
+	font-size: 18px
+}
+
+span.eventCostVal {
+	
+	font-size: 20px;
+	padding: 5px;
 }
 
 button.eventURL {
@@ -348,6 +400,7 @@ button.eventURL:hover {
 	display: flex;
 	justify-content: flex-start;
 	align-items: center;
+	
 }
 
 .result-btns-wrapper a button{
@@ -356,12 +409,18 @@ button.eventURL:hover {
 }
 
 .noResults {
-	width: 100%;
 	border: none;
 }
 
 .noResults header {
-	font-size: 35px;
+	width: 100%;
+	border: none;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+		font-size: 50px;
+
 }
 
 span.noResultsLocation {
@@ -379,16 +438,12 @@ span.noResultsLocation {
 	display: flex;
 	flex-direction: row;
 	justify-content: center;
-	background-color: black;
-	border: 2px solid white;
-	border-right: none;
-	border-left: none;
 	margin-bottom: 10px;
 
 }
 .itin-msg h2 {
 	color: white;
-	margin: 10px;
+	margin: 5px;
 	text-align: center;
 }
 
@@ -401,6 +456,7 @@ span.noResultsLocation {
 	align-items: center;
 	padding: 0px 0;
 		justify-content: center;
+	
 
 }
 
@@ -417,7 +473,7 @@ span.noResultsLocation {
 	width: 100%;
 }
 
-.weather, .cost, .event-details, .restaurant-details {
+.cost, .event-details, .restaurant-details {
 	display: flex;
 	flex-direction: column;
 	align-items: flex-start;
@@ -425,19 +481,16 @@ span.noResultsLocation {
 	margin: 10px 5px;
 	font-size: 20px;
 	width: 100%;
-}
-
-.event
-
-.desc {
-	
+	background: linear-gradient(
+      rgba(29, 30, 34, 0.3),
+      rgba(29, 30, 34, 0.8)
+    );
+	border: 2px solid #AEFFD8;
 }
 
 .date-details header {
-	font-size: 15px;
 	border-bottom: 2px solid white;
 	margin-bottom: 10px;
-	background-color: black;
 	padding: 8px;
 	width: 100%;
 }
@@ -453,8 +506,7 @@ span.noResultsLocation {
 	color: white;
 	font-size: 18px;
 	cursor: pointer;
-	margin-top: 10px;
-	margin-bottom: 10px;
+	margin: 10px 5px
 	
 }
 
@@ -504,34 +556,26 @@ span.noResultsLocation {
 	cursor: pointer;
 }
 
-.date-details .weather-header {
-	border: none;
-	margin: 0;
-	color:#A9BCD0;
-	font-weight: 1000;
-	font-size: 20px
-}
-
-.eventWeather {
-	margin-bottom: 10px;
-}
-
-.weather-section {
-	margin-top: 10px;	
-}
-
 
 .event-tickets, .dinner-price, .total-cost, .event-venue, .event-address, .event-time {
 	margin: 5px;
-	background-color: black;
 }
 
+.event-tickets span.names {
+	font-size 18px;
+}
+
+.event-details .event-venue-address {
+	margin: 0 5px;
+	padding: 5px;
+}
 
 .costVal {
 	background-color: white;
 	color: black;
-	font-size: 20px;
-	padding: 5px;
+	font-size: 18px;
+	padding: 2px;
+	
 		
 }
 
@@ -548,49 +592,40 @@ span.total-cost span.costVal {
 }
 
 span.names {
-	background-color: black;
-	font-weight: bolder;
-	font-size: 16px;
-		padding: 5px;
+	font-size: 18px;
+	font-weight: bold
 
 }
 
 span.event-venue {
 	font-size: 28px;
-		padding: 5px;
-
+	padding: 5px;
+	
 }
 
 span.event-address, span.restaurant-address {
 	color: #CEE5F2;
 	font-size: 22px;
-	background-color: black;
 		padding: 5px;
+	margin-bottom: 5px;
 
 }
 
 
 span.event-time {
 	color: white;
-	background-color: black;
 	font-size: 18px;
 	margin-top: 5px;
 	padding: 5px;
-}
-
-div.cost, div.event-details, div.restaurant-details {
-	border: 2px solid white;
-	background-color:black;
-	padding: 5px;
+	font-weight: bold;
 }
 
 div.restaurant-details {
 }
 
 span.restaurant-foodType {
-	background-color: black;
-	margin-bottom: 10px;
-		padding: 5px;
+	margin-bottom: 5px;
+	padding: 5px;
 }
 
 
