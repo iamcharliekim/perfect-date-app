@@ -26,6 +26,39 @@ navbar {
 	
 }
 
+.nav-header {
+    width: 708%
+}
+
+.inner-nav {
+    color: white;
+    width: 30%;
+    display: none;
+    justify-content: flex-end;
+    align-items: center;
+    font-weight: bolder;
+}
+
+.inner-nav > .new, .inner-nav > .back{
+    border: none;
+    padding: 5px 0;
+    margin: 0 5px;
+    font-size: 18px;
+    cursor: pointer;
+    min-width: 150px
+    
+}
+
+.inner-nav > .new:hover, .inner-nav > .back:hover {
+	background:  linear-gradient(
+      rgba(29, 30, 34, 0.4),
+      rgba(29, 30, 34, 0.2)
+    ), url(images/bgimage.jpg);
+	cursor: pointer;
+    border: 1px solid white;
+    font-weight: bold;
+}
+
 .home-logo {
 	cursor: pointer;
 }
@@ -42,6 +75,13 @@ main {
 
 .menu {
 	display: none;
+	flex-direction: column;
+	color: white;
+	width:100%;
+}
+
+.show-menu {
+    display: flex;
 	flex-direction: column;
 	color: white;
 	width:100%;
@@ -69,7 +109,7 @@ main {
 	border-right: 2px solid #AEFFD8;
 }
 
-.home, .back, .forward, .contact {
+.new , .home, .back, .forward, .contact {
 	width: 100%;
 	background:  linear-gradient(
       rgba(29, 30, 34, 0.95),
@@ -184,10 +224,13 @@ header h2 {
 	align-items: center;
 }
 
+
 .event-search-form legend, .yelp-search-form legend{
 	color: white;
 	width: 100%;
 	padding: 10px 0;
+	margin-bottom: 20px;
+	border-bottom: 2px solid white;
 }
 
 .event-search-form label {
@@ -205,6 +248,20 @@ header h2 {
 	
 }
 
+.event-search-form label {
+	display: flex;
+	justify-content: flex-start;
+	align-items: flex-start;
+}
+
+.event-location-txt {
+	margin: 0 auto;
+}
+
+.fa-utensils {
+	font-size: 20px;
+}
+
 .search-input {
 	padding: 15px;
 	width: 100%;
@@ -213,9 +270,6 @@ header h2 {
 	border: 2px solid lightgray;
 }
 
-input.event {
-	
-}
 
 .radius-label{
 	width: 100%;
@@ -287,34 +341,47 @@ span.zomato-price {
 	font-weight: bold;
 }
 
-.google-address {
-	color: #CEE5F2;
-	cursor: pointer;
-	text-decoration: none;
-}
-
-.event-select:checked {
+.event-select:hover {
 	background: linear-gradient(
       rgba(0, 0, 0, 0.8),
       rgba(0, 0, 0, 0.4)
     ) ;
-	border: 4px solid #AEFFD8;
+	border: 2px solid #AEFFD8;
 }
 
 .eventResults header, .zomatoResults header {
 	font-size: 24px;
-	width: 90%;
+	width: 70%;
 	color: #AEFFD8;
 	font-weight: bold;
 }
 
 .event-select {
 	position: absolute;
-	right: 2%
+	right: 2%;
+    padding: 5px;
+    font-size: 16px;
+    background-color: inherit;
+	box-shadow: 1px 1px 1px 1px black;
+    color: white;
+    border: 2px solid #AEFFD8;
+    background:  linear-gradient(
+      rgba(29, 30, 34, 0.1),
+      rgba(29, 30, 34, 0.2)
+    ), url(images/bgimage.jpg);
+    cursor: pointer
 	
 }
 
+.fa-calendar {
+	color:white
+}
+span.eventDirections {
+}
 
+span.eventDirections a {
+	color: #A3E7FC
+}
 
 .eventResults span, .zomatoResults span {
 	color: white;
@@ -324,7 +391,7 @@ span.zomato-price {
 
 span.eventDateTime {
 	font-weight: bold;
-		color: #CEE5F2;
+	color: white
 }
 
 .eventResults a, .zomatoResults a{
@@ -335,6 +402,7 @@ span.eventVenue {
 	font-size: 25px;
 	font-weight: bold;
 	color: white;
+	
 }
 
 .zomatoResults .google-address {
@@ -367,7 +435,7 @@ button.eventURL {
 	padding: 10px;
 	border-radius: 5rem;
 	border: 2px solid #AEFFD8;
-		background:  linear-gradient(
+	background:  linear-gradient(
       rgba(29, 30, 34, 0.1),
       rgba(29, 30, 34, 0.2)
     ), url(images/bgimage.jpg);
@@ -395,6 +463,21 @@ button.eventURL:hover {
 	border: 4px solid #AEFFD8;
 }
 
+.yelp-search-form label {
+	color: white;
+	width :100%;
+	margin: 10px auto;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	justify-content: center;
+	
+}
+
+.yelp-queryString {
+	margin: 10px auto;
+}
+
 .result-btns-wrapper {
 	width: 100%;
 	display: flex;
@@ -408,24 +491,46 @@ button.eventURL:hover {
 	margin-right: 10px;
 }
 
-.noResults {
-	border: none;
+.no-results {
+    width: 1200px;
 }
 
-.noResults header {
-	width: 100%;
+div.noResults {
+    width: 100%;
+    margin: 0;
 	border: none;
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-	align-items: center;
-		font-size: 50px;
-
+    font-size: 20px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center
+    
 }
 
-span.noResultsLocation {
+span.noResultsLocation, span.noResultsQuery {
 	color: #CEE5F2;
-	font-size: 40px;
+    font-weight: bold;
+    background-color: black;
+    font-size: 22px;
+    margin: 0 10px;
+    padding: 10px;
+    
+
+}
+
+.google-address {
+	color: #A3E7FC;
+	cursor: pointer;
+	margin-top: 0;
+	width: 50%;	
+	text-decoration: none;
+	font-weight: bold
+}
+
+.google-address:hover {
+	color: #AEFFD8;
+	font-weight: bold;
+	text-decoration: none;
 }
 
 .results {
@@ -460,7 +565,6 @@ span.noResultsLocation {
 
 }
 
-
 .weather-cost-wrapper {
 
 }
@@ -472,6 +576,8 @@ span.noResultsLocation {
 	justify-content: center;
 	width: 100%;
 }
+
+
 
 .cost, .event-details, .restaurant-details {
 	display: flex;
@@ -604,11 +710,22 @@ span.event-venue {
 }
 
 span.event-address, span.restaurant-address {
-	color: #CEE5F2;
-	font-size: 22px;
+	color: white;
+	font-size: 18px;
 		padding: 5px;
-	margin-bottom: 5px;
+	margin: 0 5px;
+	margin-bottom: 15px;
+	width: 70%
+}
 
+span.eventAddress{
+	font-size: 18px;
+	margin-bottom: 15px;
+	
+}
+.restaurant-details span.eventDirections {
+	margin: 0 5px;
+	padding-bottom: 5px;
 }
 
 
@@ -624,7 +741,7 @@ div.restaurant-details {
 }
 
 span.restaurant-foodType {
-	margin-bottom: 5px;
+	margin: 5px;
 	padding: 5px;
 }
 
@@ -719,4 +836,15 @@ span.restaurant-foodType {
   100% {
     opacity: 0;
   }
+}
+
+
+@media (min-width: 780px){
+    .hamburger {
+        display: none;
+    }
+    
+    .inner-nav {
+        display: flex;
+    }
 }
