@@ -229,7 +229,7 @@ header h2 {
 	color: white;
 	width: 100%;
 	padding: 10px 0;
-	margin-bottom: 20px;
+	margin-bottom: 30px;
 	border-bottom: 2px solid white;
 }
 
@@ -309,7 +309,7 @@ input.location {
     ), url(images/bgimage.jpg);
 	color: white;
 	border: 2px solid #AEFFD8;
-	margin-top: 10px;
+	margin-top: 5px;
 }
 
 .submit-btn:hover {
@@ -333,8 +333,10 @@ input.location {
 	width: 100%
 }
 
+
 span.zomato-ratings {
 	font-weight: bold;
+	
 }
 
 span.zomato-price {
@@ -349,11 +351,41 @@ span.zomato-price {
 	border: 2px solid #AEFFD8;
 }
 
+.event-img-wrapper, .zomato-img-wrapper {
+	display: flex;
+	justify-content: flex-start;
+	align-items: center;
+	margin: 15px 0;
+	font-style: italic;
+	color: #CEE5F2;
+	width: 100%;
+}
+
+
+
+.event-img, .zomato-img {
+	width: 100%;
+	max-width: 280px;
+}
+
+.date-details .event-img-wrapper, .date-details .zomato-img-wrapper {
+	margin: 15px 0;
+	padding: 0
+}
+
+.date-details .event-img, .date-details .zomato-img {
+
+}
+
 .eventResults header, .zomatoResults header {
 	font-size: 24px;
 	width: 70%;
 	color: #AEFFD8;
 	font-weight: bold;
+}
+
+.eventResults .eventDateTime {
+	width: 50%
 }
 
 .event-select {
@@ -377,10 +409,17 @@ span.zomato-price {
 	color:white
 }
 span.eventDirections {
+	padding-top: 5px;
+	padding-bottom: 10px
+}
+
+.event-unfold span.eventDirections {
+	padding-bottom: 0;
 }
 
 span.eventDirections a {
-	color: #A3E7FC
+	color: #A3E7FC;
+	font-size: 20px
 }
 
 .eventResults span, .zomatoResults span {
@@ -389,19 +428,33 @@ span.eventDirections a {
 	font-size: 18px
 }
 
+span.zomato-price {
+	margin-top: 0
+}
+
+.zomatoResults .zomato-ratings {
+	margin-top: 0;
+	padding-bottom: 10px 
+}
+
+.zomatoResults .eventAddress {
+	padding-bottom: 5px;
+	margin-top: 10px
+}
+
 span.eventDateTime {
 	font-weight: bold;
 	color: white
 }
 
 .eventResults a, .zomatoResults a{
-	margin-top: 15px;
 }
 
 span.eventVenue {
-	font-size: 25px;
+	font-size: 22px;
 	font-weight: bold;
 	color: white;
+	padding-bottom: 5px;
 	
 }
 
@@ -410,7 +463,6 @@ span.eventVenue {
 }
 
 .event-venue-address {
-	margin-top: 15px;
 	display: flex;
 	flex-direction: column;
 	justify-content: center
@@ -431,6 +483,7 @@ span.eventCostVal {
 	padding: 5px;
 }
 
+
 button.eventURL {
 	padding: 10px;
 	border-radius: 5rem;
@@ -441,7 +494,8 @@ button.eventURL {
     ), url(images/bgimage.jpg);
 	color: white;
 	font-size: 18px;
-	cursor: pointer
+	cursor: pointer;
+	margin-top: 15px;
 }
 
 button.eventURL:hover {
@@ -466,11 +520,12 @@ button.eventURL:hover {
 .yelp-search-form label {
 	color: white;
 	width :100%;
-	margin: 10px auto;
+	margin: 5px auto;	
 	display: flex;
 	flex-direction: column;
 	align-items: flex-start;
 	justify-content: center;
+	font-size: 15px
 	
 }
 
@@ -492,18 +547,15 @@ button.eventURL:hover {
 }
 
 .no-results {
-    width: 1200px;
+ 	width: 
 }
 
 div.noResults {
     width: 100%;
     margin: 0;
 	border: none;
-    font-size: 20px;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center
+    font-size: 30px;
+
     
 }
 
@@ -511,8 +563,7 @@ span.noResultsLocation, span.noResultsQuery {
 	color: #CEE5F2;
     font-weight: bold;
     background-color: black;
-    font-size: 22px;
-    margin: 0 10px;
+    font-size: 30px;
     padding: 10px;
     
 
@@ -535,7 +586,7 @@ span.noResultsLocation, span.noResultsQuery {
 
 .results {
 	width: 95%;
-	max-width: 500px;
+	max-width: 540px;
 }
 
 .itin-msg {
@@ -554,7 +605,7 @@ span.noResultsLocation, span.noResultsQuery {
 
 .date-details {
 	width: 99%;
-	max-width: 500px;
+	max-width: 600px;
 	color: white;
 	display: flex;
 	flex-direction: column;
@@ -595,10 +646,9 @@ span.noResultsLocation, span.noResultsQuery {
 }
 
 .date-details header {
-	border-bottom: 2px solid white;
-	margin-bottom: 10px;
 	padding: 8px;
 	width: 100%;
+
 }
 
 .date-details button {
@@ -612,8 +662,6 @@ span.noResultsLocation, span.noResultsQuery {
 	color: white;
 	font-size: 18px;
 	cursor: pointer;
-	margin: 10px 5px
-	
 }
 
 .date-details button:hover {
@@ -635,6 +683,10 @@ span.noResultsLocation, span.noResultsQuery {
 	border-bottom: 2px solid white;
 	padding: 10px;
 	background-color: black;
+}
+
+button.event-link {
+	margin-top: 15px
 }
 
 .share-date-btn {
@@ -662,45 +714,39 @@ span.noResultsLocation, span.noResultsQuery {
 	cursor: pointer;
 }
 
-
-.event-tickets, .dinner-price, .total-cost, .event-venue, .event-address, .event-time {
-	margin: 5px;
+.event-tickets, .dinner-price {
+	margin: 5px 0;
+	font-size 16px
+	
 }
 
-.event-tickets span.names {
-	font-size 18px;
-}
-
-.event-details .event-venue-address {
-	margin: 0 5px;
-	padding: 5px;
-}
 
 .costVal {
 	background-color: white;
 	color: black;
 	font-size: 18px;
-	padding: 2px;
-	
-		
 }
 
 span.total-cost {
-	border-top: 2px solid #AEFFD8;
-	padding-top: 10px;
 	font-size: 30px;
-	width: 95%
+	width: 95%;
+	margin-top: 10px
 }
 
 span.total-cost span.costVal {
 	font-size: 30px;
-	padding: 5px
+	padding: 5px;
+	
 }
 
 span.names {
 	font-size: 18px;
 	font-weight: bold
 
+}
+
+.event-tickets, .dinner-price, .total-cost {
+	padding-left: 5px;
 }
 
 span.event-venue {
@@ -712,28 +758,37 @@ span.event-venue {
 span.event-address, span.restaurant-address {
 	color: white;
 	font-size: 18px;
-		padding: 5px;
-	margin: 0 5px;
-	margin-bottom: 15px;
-	width: 70%
+
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	justify-content: center;
+}
+
+.restaurant-unfold span.restaurant-address {
+	padding-bottom: 5px
+}
+
+.restaurant-unfold .restaurant-btns-wrapper {
+	margin-top: 15px
 }
 
 span.eventAddress{
 	font-size: 18px;
-	margin-bottom: 15px;
-	
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: flex-start;
+	padding-bottom: 5px
 }
 .restaurant-details span.eventDirections {
-	margin: 0 5px;
-	padding-bottom: 5px;
+
 }
 
 
 span.event-time {
 	color: white;
 	font-size: 18px;
-	margin-top: 5px;
-	padding: 5px;
 	font-weight: bold;
 }
 
@@ -741,10 +796,83 @@ div.restaurant-details {
 }
 
 span.restaurant-foodType {
-	margin: 5px;
-	padding: 5px;
+	padding: 5px 0 ;
+	padding-bottom: 0
 }
 
+.zomatoResults .eventDateTime {
+	width: 85%;
+}
+
+
+
+
+.cost-unfold, .event-unfold, .restaurant-unfold {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: flex-start;
+		border-top: 2px solid #AEFFD8;
+	width: 100%;
+	padding: 10px;
+
+}
+
+.cost-unfold span {
+	margin: 10px 0;
+	padding: 2px
+
+}
+
+.event-unfold .event-time {
+	padding: 5px 0 ;
+	padding-bottom: 0
+}
+
+.event-unfold .restaurant-btns-wrapper {
+}
+
+
+.cost-header, .event-header, .restaurant-header {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+	
+}
+
+.cost-header:hover, .event-header:hover, .restaurant-header:hover {
+	cursor:pointer;
+	background: linear-gradient(
+      rgba(29, 30, 34, 0.5),
+      rgba(29, 30, 34, 0.1)
+    ), url(images/bgimage.jpg);
+	color: white
+}
+
+.date-details-clicked {
+		background: linear-gradient(
+      rgba(29, 30, 34, 0.1),
+      rgba(29, 30, 34, 0.1)
+    ), url(images/bgimage.jpg);
+	color: white
+}
+
+span.event-name, span.restaurant-name {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+}
+
+.fa-angle-double-down, .fa-angle-double-up {
+	font-size: 25px;
+	margin: 15px auto;
+	color: white;
+	
+}
 
 .spinner-bg {
 	background:  linear-gradient(
@@ -836,6 +964,46 @@ span.restaurant-foodType {
   100% {
     opacity: 0;
   }
+}
+
+@media (min-width: 540px){
+	.eventResults{
+		max-width: 580px;
+	}
+	.responsive-div {
+		display: flex;
+		flex-direction: row;
+		justify-content: stretch;
+		align-items: center;
+	}
+	
+	.responsive-left {
+		margin-right: 20px;
+	}
+	
+	.event-img-wrapper, .zomato-img-wrapper {
+		min-width: 280px;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
+	
+	.eventDirections {
+		padding-bottom: 10px
+	}
+	
+	.responsive-right button {
+		margin-top: 15px;
+	}
+	
+	.zomatoResults .eventDateTime {
+		width: 50%
+	}
+	
+	.date-details .restaurant-foodType {
+		width: 50%
+	}
+	
 }
 
 

@@ -33,7 +33,10 @@ const selectedEventObjReset = {
                 showMenu: false,
                 historyCounter: 0,
                 history: [mainPageGenerator(), entertainmentPageGenerator(), foodAndDrinksPageGenerator()],
-                zomatoSearchQuery: ''
+                zomatoSearchQuery: '',
+				costSlide: false,
+				eventSlide: false,
+				restaurantSlide: false
 }
 
 // FUNCTIONS: START
@@ -77,7 +80,6 @@ function geoLocate(){
 			
 			// SET LOCATION INPUT TO CURRENTLOCATION
 			$('.e-search').val(currentLocation)
-					$('.event-search-form').submit()
 
 		})
 		
@@ -139,7 +141,9 @@ function entertainmentPageGenerator(){
 	return `	
 		<form action="" class="event-search-form">
 			<legend><h2>Search and Select Event</h2></legend>
-				<input type="text" class="search-input e-search location" placeholder="Location" id="location">
+				<label>Location (format: city, state-code)
+					<input type="text" class="search-input e-search location" placeholder="Location" id="location">
+				</label>
 				<button type="submit" class="submit-btn">Search</button>
 		</form>
 
@@ -188,13 +192,11 @@ function appendPage(page){
 	
 	if (selectedEventObj.historyCounter=== 2 && selectedEventObj.eventSelected){
 		$('.e-search').val(selectedEventObj.eventLocation)
-		$('.event-search-form').submit();
 	}
 	
 	if (selectedEventObj.historyCounter=== 3 && selectedEventObj.restaurantSelected){
 		$('.yelp-locations').val(selectedEventObj.restaurantLocation)
         $('.yelp-queryString').val(selectedEventObj.zomatoSearchQuery)
-		$('.yelp-search-form').submit()
 	}
 }
 
@@ -231,9 +233,8 @@ $('.menu .home').on('click', (e)=>{
 })
 
 $('.nav-new').on('click', (e)=>{
-    selectedEventObj.historyCounter= 0;
-	appendPage(mainPageGenerator())
     selectedEventObj = selectedEventObjReset
+	appendPage(mainPageGenerator())
     
 })
 
@@ -302,6 +303,10 @@ $('main').on('submit', '.event-search-form', (e)=>{
 				let eventURL = eventsArr[i].url
 				let eventVenue = eventsArr[i].venue.name
 				let eventID = eventsArr[i].id
+				let eventIMG = eventsArr[i].performers[0].image
+				
+				console.log(eventIMG)
+
 				
 				
 				let eventPrice = `~$${eventsArr[i].stats.average_price*2}`
@@ -327,6 +332,13 @@ $('main').on('submit', '.event-search-form', (e)=>{
 				}).then(responseJson =>{
 					
 				let eventAddress = responseJson.results[0].formatted_address
+				console.log(eventAddress)
+				
+				let eventAddressSplit = eventAddress.split(',')
+				
+				let eventStreet = eventAddressSplit[0]
+				let eventCity = eventAddressSplit[1].substring(1)
+				let eventStateZip = eventAddressSplit[2].substring(1)
 
 				let addressArr = eventAddress.split(' ')
 				let eventAddressURI = addressArr.join('+')
@@ -336,22 +348,63 @@ $('main').on('submit', '.event-search-form', (e)=>{
 					<div class="eventResults" id=${eventID}>
 						<header>${eventTitle}</header>
 						<button class="event-select"> SELECT </button>
-						<span class="eventDateTime"><i class="far fa-calendar"></i>
-							${timeParser(eventDateTime)[0]} @ ${timeParser(eventDateTime)[1]}</span>
-						<div class="event-venue-address">
-							<span class="eventVenue">${eventVenue}</span>
-							<span class="eventAddress">${eventAddress}</span>
-							<span class="eventDirections"><i class="fas fa-directions"></i> 
-							<a href="${googleMapsLinkURL}" target="_blank" class="google-address">Get Directions</a></span>
+						<span class="eventDateTime">
+									<i class="far fa-calendar"></i>
+									${timeParser(eventDateTime)[0]} @ ${timeParser(eventDateTime)[1]}
+								</span>
+						<div class="responsive-div">
+
+							<div class="responsive-left">
+
+								<div class="event-img-wrapper">
+									<img src="${eventIMG}" class="event-img">
+								</div>
+							</div>
+							<div class="responsive-right">
+								
+								<div class="event-venue-address">
+									<span class="eventVenue">${eventVenue}</span>
+
+									<span class="eventAddress">
+										<span class="eventStreet">${eventStreet}</span>
+										<span class="eventCityStateZip">${eventCity}, ${eventStateZip}</span>
+									</span>
+
+									<span class="eventDirections">
+										<i class="fas fa-directions"></i> 
+										<a href="${googleMapsLinkURL}" target="_blank" class="google-address">Get Directions</a>
+									</span>
+								</div>
+
+								<span class="event-price">
+									<i class="fas fa-ticket-alt"></i>
+										Tickets (2): <span class="eventCostVal">${eventPrice}</span>
+
+								<div class="event-btn-wrapper">
+									<a href="${eventURL}" target="_blank">
+										<button class="eventURL">DETAILS</button>
+									</a>
+								</div>
+							</div>
+
 						</div>
+						</div>`
+								
 		
-						<span class="event-price">
-						<i class="fas fa-ticket-alt"></i>
-							Tickets (2): <span class="eventCostVal">${eventPrice}</span></span>
-						<a href="${eventURL}" target="_blank"><button class="eventURL">DETAILS</button></a>
-					</div>`
-				
+
 				$('.results').append(resultDiv)
+					
+				let imgArr = $('.event-img')
+				
+				console.log(imgArr)
+				for (let i = 0 ; i < imgArr.length; i++){
+					if(imgArr[i].src.includes('null')){
+						imgArr[i].parentNode.append('image not available')
+						imgArr[i].remove()
+
+					}
+				}
+			
 				})
 
 
@@ -390,6 +443,7 @@ $('main').on('click', '.eventResults > .event-select', (e)=>{
 			hideLoader();
 			console.log(event)
 			
+			selectedEventObj.eventIMG = event.performers[0].image
 			let eventLat = event.venue.location.lat
 			let eventLong = event.venue.location.lon
 			
@@ -522,6 +576,8 @@ $('main').on('submit', '.yelp-search-form', (e)=>{
                                 let zomatoRatings = foodAndDrinkArr[i].restaurant.user_rating.aggregate_rating
                                 let zomatoRatingsText = foodAndDrinkArr[i].restaurant.user_rating.rating_text
                                 let zomatoID = foodAndDrinkArr[i].restaurant.R.res_id
+								let zomatoIMG = foodAndDrinkArr[i].restaurant.thumb
+
 
                                 let zomatoLat = foodAndDrinkArr[i].restaurant.location.latitude
                                 let zomatoLong = foodAndDrinkArr[i].restaurant.location.longitude
@@ -536,8 +592,15 @@ $('main').on('submit', '.yelp-search-form', (e)=>{
                                     }
 
                                 }).then(responseJson =>{
+		
 
                                 let zomatoAddress = responseJson.results[0].formatted_address
+								
+								let zomatoAddressSplit = zomatoAddress.split(',')
+								let zomatoStreet = zomatoAddressSplit[0]
+								let zomatoCity = zomatoAddressSplit[1].substring(1)
+								let zomatoStateZip = zomatoAddressSplit[2].substring(1)
+								
                                 let addressArr = zomatoAddress.split(' ')
                                 let zomatoAddressURI = addressArr.join('+')
                                 let eventAddressURI = selectedEventObj.eventAddress.split(' ').join('+')
@@ -551,14 +614,22 @@ $('main').on('submit', '.yelp-search-form', (e)=>{
                                         <button class="event-select"> SELECT </button>
 
                                         <span class="eventDateTime">
-										<i class="fas fa-utensils"></i>				
-										<i>${zomatoCuisines}</i></span>
+											<i class="fas fa-utensils"></i>				
+											<i>${zomatoCuisines}</i>
+										</span>
+		
+										 <span class="zomato-ratings">
+											Ratings: <strong>${zomatoRatings}/5</strong>
+										</span>
 
-                                        <span class="zomato-ratings">
-										Ratings: <strong>${zomatoRatings}/5</strong></span>
+										<div class="zomato-img-wrapper">
+											<img src="${zomatoIMG}" class="zomato-img">
+										</div>
 
                                         <div class="event-venue-address">
-                                            <span class="eventAddress">${zomatoAddress}
+                                            <span class="eventAddress">
+												<span class="zomatoStreet">${zomatoStreet}</span>
+												<span class="zomatoCityStateZip">${zomatoCity}, ${zomatoStateZip}</span>
 											</span>
 											<span class="eventDirections">
 												<i class="fas fa-directions"></i> 
@@ -576,7 +647,16 @@ $('main').on('submit', '.yelp-search-form', (e)=>{
                                     </div>`
 
                                    $('.results').append(resultDiv)
-
+									
+									let imgArr = $('.zomato-img')
+								
+										console.log(imgArr)
+									for (let i = 0 ; i < imgArr.length; i++){
+										if(!imgArr[i].src.includes('zmtcdn')){
+											imgArr[i].parentNode.append('image not available')
+											imgArr[i].remove()
+										}
+									}
                                 })
 
                             }
@@ -626,6 +706,7 @@ $('main').on('submit', '.yelp-search-form', (e)=>{
                         let zomatoRatings = foodAndDrinkArr[i].restaurant.user_rating.aggregate_rating
                         let zomatoRatingsText = foodAndDrinkArr[i].restaurant.user_rating.rating_text
                         let zomatoID = foodAndDrinkArr[i].restaurant.R.res_id
+						let zomatoIMG = foodAndDrinkArr[i].restaurant.thumb
 
                         let zomatoLat = foodAndDrinkArr[i].restaurant.location.latitude
                         let zomatoLong = foodAndDrinkArr[i].restaurant.location.longitude
@@ -642,6 +723,13 @@ $('main').on('submit', '.yelp-search-form', (e)=>{
                         }).then(responseJson =>{
 
                         let zomatoAddress = responseJson.results[0].formatted_address
+						
+						let zomatoAddressSplit = zomatoAddress.split(',')
+						let zomatoStreet = zomatoAddressSplit[0]
+						let zomatoCity = zomatoAddressSplit[1].substring(1)
+						let zomatoStateZip = zomatoAddressSplit[2].substring(1)
+								
+								
                         let addressArr = zomatoAddress.split(' ')
                         let zomatoAddressURI = addressArr.join('+')
                         let eventAddressURI = selectedEventObj.eventAddress.split(' ').join('+')
@@ -658,30 +746,50 @@ $('main').on('submit', '.yelp-search-form', (e)=>{
 										<i class="fas fa-utensils"></i>	 			
 				
 										<i>${zomatoCuisines}</i></span>
-
-                                        <span class="zomato-ratings">Ratings: <strong>${zomatoRatings}/5</strong></span>
-
-                                        <div class="event-venue-address">
-                                            <span class="eventAddress">${zomatoAddress}
-											</span>
-											<span class="eventDirections">
-												<i class="fas fa-directions"></i> 
-													<a href="${googleMapsLinkURL}" target="_blank" class="google-address">Get Directions</a>
-											</span>
 										
-                                        </div>
-										   <span class="zomato-price">
-											Dinner for 2: <strong>~$${zomatoPrice}</strong></span>
+										<div class="responsive-div">
+											<div class="responsive-left">
 
-                                        <div class="result-btns-wrapper">
-                                            <a href="${zomatoMenuURL}" target="_blank"><button class="eventURL">MENU</button></a>
-                                            <a href="${zomatoDetailsURL}" target="_blank"><button class="eventURL">DETAILS</button></a>
-                                        </div>
+												<div class="zomato-img-wrapper">
+													<img src="${zomatoIMG}" class="zomato-img">
+												</div>
+										</div>
+											
+										<div class="responsive-right">
+											<span class="zomato-ratings">Ratings: <strong>${zomatoRatings}/5</strong></span>
+
+											<div class="event-venue-address">
+												<span class="eventAddress">
+													<span class="zomatoStreet">${zomatoStreet}</span>
+													<span class="zomatoCityStateZip">${zomatoCity}, ${zomatoStateZip}</span>
+												</span>
+												<span class="eventDirections">
+													<i class="fas fa-directions"></i> 
+														<a href="${googleMapsLinkURL}" target="_blank" class="google-address">Get Directions</a>
+												</span>
+
+											</div>
+											   <span class="zomato-price">
+												Dinner for 2: <strong>~$${zomatoPrice}</strong></span>
+
+											<div class="result-btns-wrapper">
+												<a href="${zomatoMenuURL}" target="_blank"><button class="eventURL">MENU</button></a>
+												<a href="${zomatoDetailsURL}" target="_blank"><button class="eventURL">DETAILS</button></a>
+											</div>
+										</div>
                                     </div>`
 
-                           $('.results').append(resultDiv)
+                           			$('.results').append(resultDiv)
 						
-
+									let imgArr = $('.zomato-img')
+								
+										console.log(imgArr)
+									for (let i = 0 ; i < imgArr.length; i++){
+										if(!imgArr[i].src.includes('zmtcdn')){
+											imgArr[i].parentNode.append('image not available')
+											imgArr[i].remove()
+										}
+									}
 
                     })
 
@@ -738,6 +846,7 @@ $('main').on('click', '.zomatoResults > .event-select', (e)=>{
 			
 				let zomatoLong = resDetails.location.longitude
 				let zomatoLat = resDetails.location.latitude
+				selectedEventObj.restaurantIMG = resDetails.thumb
 				
 				
 				const googleApiURL = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${zomatoLat},${zomatoLong}&key=${selectedEventObj.googleApiKey}`
@@ -793,81 +902,210 @@ $('main').on('click', '.zomatoResults > .event-select', (e)=>{
 								<div class="date-details">
 
 									<div class="cost">
-										<header><h1>Estimated Total Cost</h1></header>
+										<header class="cost-header">
+											<h1>Estimated Total Cost</h1>
+											<i class="fas fa-angle-double-down"></i>
+											<i class="fas fa-angle-double-up"></i>
+										</header>
 
-										<span class="event-tickets">
-										<span class="names">1. ${selectedEventObj.eventName}</span>: <span class="costVal">$${selectedEventObj.eventCost}</span></span>
+										<div class="cost-unfold unfold">
+											<span class="event-tickets">
+											<span class="names">1. ${selectedEventObj.eventName}</span>: <span class="costVal">$${selectedEventObj.eventCost}</span></span>
 
-										<span class="dinner-price">
-											<span class="names">2. ${selectedEventObj.restaurantName}</span>: <span class="costVal">$${selectedEventObj.restaurantCost}</span></span>
-											<span class="total-cost">Total: <span class="costVal">$${Number(selectedEventObj.eventCost + selectedEventObj.restaurantCost)}</span></span>
-									</div>
+											<span class="dinner-price">
+												<span class="names">2. ${selectedEventObj.restaurantName}</span>: <span class="costVal">$${selectedEventObj.restaurantCost}</span></span>
+												<span class="total-cost">Total: <span class="costVal">$${Number(selectedEventObj.eventCost + selectedEventObj.restaurantCost)}</span></span>
+											</div>
+										</div>
 
 
 
 									<div class="event-restaurant-details-wrapper">
+
 										<div class="event-details">
-											<header>
-												<h1>
-													<span class="event-name">${selectedEventObj.eventName}</span>
-												</h1>
+											<header class="event-header">
+												<h1><span class="event-name">${selectedEventObj.eventName}</span></h1>
+												<i class="fas fa-angle-double-down"></i>
+												<i class="fas fa-angle-double-up"></i>
 											</header>
 
-										<span class="event-time">
-												
-												<i class="far fa-calendar"></i>
-					
-												${timeParser(selectedEventObj.eventTime)[0]} @ ${timeParser(selectedEventObj.eventTime)[1]}
-											</span>
+										<div class="event-unfold unfold">
+											<span class="event-time">
 
-										<div class="event-venue-address">
-											<span class="eventVenue">${selectedEventObj.eventVenue}</span>
-										<span class="eventAddress">
-											${selectedEventObj.eventAddress}</span>
+													<i class="far fa-calendar"></i>
 
-										<span class="eventDirections">
-											<i class="fas fa-directions"></i> 
-							
-											<a href="${eventGoogleMapsLinkURL}" target="_blank" class="google-address">Get Directions</a></span>
+													${timeParser(selectedEventObj.eventTime)[0]} @ ${timeParser(selectedEventObj.eventTime)[1]}
+												</span>
+										<div class="responsive-div">
+											<div class="responsive-left">
+												<div class="event-img-wrapper">
+													<img src="${selectedEventObj.eventIMG}" class="event-img">
+												</div>
+											</div>
+										<div class="responsive-right">
+											<div class="event-venue-address">
+													<span class="eventVenue">${selectedEventObj.eventVenue}</span>
+												<span class="eventAddress">
+													<span class="eventStreet">${selectedEventObj.eventAddress.split(',')[0]}</span>
+													<span class="eventCityStateZip">${selectedEventObj.eventAddress.split(',')[1].substring(1)}, ${selectedEventObj.eventAddress.split(',')[2].substring(1)}</span>
+												</span>
+
+												<span class="eventDirections">
+													<i class="fas fa-directions"></i> 
+
+													<a href="${eventGoogleMapsLinkURL}" target="_blank" class="google-address">Get Directions</a>
+												</span>
+											</div>
+
+											<div class="restaurant-btns-wrapper">
+													<a href="${selectedEventObj.eventDetailsLink}" target="_blank"><button class="event-link">Details</button></a>
+											</div>
+
 										</div>
-										
-									
-											<a href="${selectedEventObj.eventDetailsLink}" target="_blank"><button class="event-link">Details</button></a>
-										</div>
+									</div>
+								</div>
+							</div>
 
 										<div class="restaurant-details">
-											<header><h1><span class="restaurant-name">${selectedEventObj.restaurantName}</span></h1></header>
-											<span class="restaurant-foodType">
+											<header class="restaurant-header">
+												<h1><span class="restaurant-name">${selectedEventObj.restaurantName}</span></h1>
+												<i class="fas fa-angle-double-down"></i>
+												<i class="fas fa-angle-double-up"></i>
+											</header>
 											
-											<i class="fas fa-utensils"></i>	 
+										<div class="restaurant-unfold unfold">
+											<span class="restaurant-foodType">
 
-											<i>${selectedEventObj.restaurantFoodType}</i></span>
-										<span class="restaurant-address">
-											${selectedEventObj.restaurantAddress}</span>
+												<i class="fas fa-utensils"></i>	 
 
-										<span class="eventDirections">
-											<i class="fas fa-directions"></i> 
-							
-											<a href="${restaurantGoogleMapsLinkURL}" target="_blank" class="google-address">Get Directions</a>
-										</span>
-										
-
-										<div class="restaurant-btns-wrapper">
-													<a href="${selectedEventObj.restaurantMenu}" target="_blank"><button class="restaurant-menu">Menu</button></a>
-													<a href="${selectedEventObj.restaurantDetails}" target="_blank"><button class="restaurant-link">Details</button></a>
-												</div>
+												<i>${selectedEventObj.restaurantFoodType}</i></span>
+									<div class="responsive-div">
+										<div class="responsive-left">
+											<div class="zomato-img-wrapper">
+												<img src="${selectedEventObj.restaurantIMG}" class="zomato-img">
+											</div>
 										</div>
 
-									</div>	
+										<div class="responsive-right">
+											<span class="restaurant-address">
+												<span class="eventStreet">${selectedEventObj.restaurantAddress.split(',')[0]}</span>
+												<span class="eventCityStateZip">${selectedEventObj.restaurantAddress.split(',')[1].substring(1)}, ${selectedEventObj.restaurantAddress.split(',')[2].substring(1)}</span>
+											</span>
+
+											<span class="eventDirections">
+												<i class="fas fa-directions"></i> 
+
+												<a href="${restaurantGoogleMapsLinkURL}" target="_blank" class="google-address">Get Directions</a>
+											</span>
+
+
+											<div class="restaurant-btns-wrapper">
+														<a href="${selectedEventObj.restaurantMenu}" target="_blank"><button class="restaurant-menu">Menu</button></a>
+														<a href="${selectedEventObj.restaurantDetails}" target="_blank"><button class="restaurant-link">Details</button></a>
+													</div>
+											</div>
+											</div>
+
+										</div>	
 
 									</div>
 
 										`
 							
 							appendPage(finalPageHTML)
+							$('.cost-unfold').css('display', 'none')
+							$('.event-unfold').css('display', 'none')
+							$('.restaurant-unfold').css('display', 'none')
+							$('.fa-angle-double-up').hide()
+													
+							let zomatoIMGArr = $('.zomato-img')
+								
+									for (let i = 0 ; i < zomatoIMGArr.length; i++){
+										if(!zomatoIMGArr[i].src.includes('zmtcdn')){
+											zomatoIMGArr[i].parentNode.append('image not available')
+											zomatoIMGArr[i].remove()
+										}
+									}													
+							let eventIMGArr = $('.event-img')
+		
+									for (let i = 0 ; i < eventIMGArr.length; i++){
+										if(eventIMGArr[i].src.includes('null')){
+											eventIMGArr[i].parentNode.append('image not available')
+											eventIMGArr[i].remove()
+										}
+									}
+					
+						
 							console.log(selectedEventObj)
 						})
 					})
+})
+
+$('main').on('click', '.cost-header' , (e)=>{
+	
+	if (!selectedEventObj.costSlide){
+		$('.cost-unfold').css('display', 'flex')
+		$('.cost-unfold').hide()
+		$('.cost-unfold').slideDown()
+		$('.cost-header .fa-angle-double-down').hide()
+		$('.cost-header .fa-angle-double-up').show()
+		
+		$('.cost-header').addClass('date-details-clicked')
+		
+		selectedEventObj.costSlide = true
+	} else {
+		$('.cost-unfold').css('display', 'none')
+		$('.cost-unfold').show()
+		$('.cost-unfold').slideUp()
+		$('.cost-header .fa-angle-double-down').show()
+		$('.cost-header .fa-angle-double-up').hide()
+		
+		$('.cost-header').removeClass('date-details-clicked')
+
+		selectedEventObj.costSlide = false
+	}
+})
+
+$('main').on('click', '.event-header' , (e)=>{
+	if (!selectedEventObj.eventSlide){
+		$('.event-unfold').css('display', 'flex')
+		$('.event-unfold').hide()
+		$('.event-unfold').slideDown()
+		$('.event-header .fa-angle-double-down').hide()
+		$('.event-header .fa-angle-double-up').show()
+		$('.event-header').addClass('date-details-clicked')
+		selectedEventObj.eventSlide = true
+	} else {
+		$('.event-unfold').css('display', 'none')
+		$('.event-unfold').show()
+		$('.event-unfold').slideUp()
+		$('.event-header .fa-angle-double-down').show()
+		$('.event-header .fa-angle-double-up').hide()
+		$('.event-header').removeClass('date-details-clicked')
+
+		selectedEventObj.eventSlide = false
+	}
+})
+
+$('main').on('click', '.restaurant-header' , (e)=>{
+	if (!selectedEventObj.restaurantSlide){
+		$('.restaurant-unfold').css('display', 'flex')
+		$('.restaurant-unfold').hide()
+		$('.restaurant-unfold').slideDown()
+			$('.restaurant-header .fa-angle-double-down').hide()
+			$('.restaurant-header .fa-angle-double-up').show()
+$('.restaurant-header').addClass('date-details-clicked')
+		selectedEventObj.restaurantSlide = true
+	} else {
+		$('.restaurant-unfold').css('display', 'none')
+		$('.restaurant-unfold').show()
+		$('.restaurant-unfold').slideUp()
+				$('.restaurant-header .fa-angle-double-down').show()
+				$('.restaurant-header .fa-angle-double-up').hide()
+$('.restaurant-header').removeClass('date-details-clicked')
+
+		selectedEventObj.restaurantSlide = false
+	}
 })
 
 
