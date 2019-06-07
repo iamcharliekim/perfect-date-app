@@ -233,8 +233,9 @@ $('.menu .home').on('click', (e)=>{
 })
 
 $('.nav-new').on('click', (e)=>{
-    selectedEventObj = selectedEventObjReset
+    selectedEventObj.historyCounter= 0;
 	appendPage(mainPageGenerator())
+    selectedEventObj = selectedEventObjReset
     
 })
 
@@ -895,15 +896,14 @@ $('main').on('click', '.zomatoResults > .event-select', (e)=>{
                     
 							 let finalPageHTML = `
 						
-								<header class="itin-msg">
-									<h2>Date Summary</h2>
-								</header>
 
 								<div class="date-details">
+                                    <header class="itin-msg"><h1> Your Date Details </h1></header>
 
 									<div class="cost">
 										<header class="cost-header">
-											<h1>Estimated Total Cost</h1>
+											<span class="cost-header-label date-details-clicked">Estimated Total Cost</span>
+                                            <h1><span class="cost-header-after">Estimated Total Cost</span></h1>
 											<i class="fas fa-angle-double-down"></i>
 											<i class="fas fa-angle-double-up"></i>
 										</header>
@@ -914,7 +914,7 @@ $('main').on('click', '.zomatoResults > .event-select', (e)=>{
 
 											<span class="dinner-price">
 												<span class="names">2. ${selectedEventObj.restaurantName}</span>: <span class="costVal">$${selectedEventObj.restaurantCost}</span></span>
-												<span class="total-cost">Total: <span class="costVal">$${Number(selectedEventObj.eventCost + selectedEventObj.restaurantCost)}</span></span>
+												<span class="total-cost">Total: <span class="costVal">$${Number(selectedEventObj.eventCost + selectedEventObj.restaurantCost).toFixed(2)}</span></span>
 											</div>
 										</div>
 
@@ -924,12 +924,14 @@ $('main').on('click', '.zomatoResults > .event-select', (e)=>{
 
 										<div class="event-details">
 											<header class="event-header">
+                                                <span class="event-header-label date-details-clicked">Event Details</span>
 												<h1><span class="event-name">${selectedEventObj.eventName}</span></h1>
 												<i class="fas fa-angle-double-down"></i>
 												<i class="fas fa-angle-double-up"></i>
 											</header>
 
 										<div class="event-unfold unfold">
+
 											<span class="event-time">
 
 													<i class="far fa-calendar"></i>
@@ -968,6 +970,8 @@ $('main').on('click', '.zomatoResults > .event-select', (e)=>{
 
 										<div class="restaurant-details">
 											<header class="restaurant-header">
+                                            <span class="restaurant-header-label date-details-clicked">Restaurant Details</span>
+
 												<h1><span class="restaurant-name">${selectedEventObj.restaurantName}</span></h1>
 												<i class="fas fa-angle-double-down"></i>
 												<i class="fas fa-angle-double-up"></i>
@@ -1013,11 +1017,17 @@ $('main').on('click', '.zomatoResults > .event-select', (e)=>{
 										`
 							
 							appendPage(finalPageHTML)
-							$('.cost-unfold').css('display', 'none')
-							$('.event-unfold').css('display', 'none')
-							$('.restaurant-unfold').css('display', 'none')
+                            $('.cost-header-after').hide()
+							$('.cost-unfold').hide()
+							$('.event-unfold').hide()
+							$('.event-name').hide()
+							$('.restaurant-unfold').hide()
+							$('.restaurant-name').hide()
 							$('.fa-angle-double-up').hide()
-													
+                    
+                            console.log($('.event-header').css('height'))
+                    
+                  
 							let zomatoIMGArr = $('.zomato-img')
 								
 									for (let i = 0 ; i < zomatoIMGArr.length; i++){
@@ -1044,21 +1054,29 @@ $('main').on('click', '.zomatoResults > .event-select', (e)=>{
 $('main').on('click', '.cost-header' , (e)=>{
 	
 	if (!selectedEventObj.costSlide){
-		$('.cost-unfold').css('display', 'flex')
 		$('.cost-unfold').hide()
 		$('.cost-unfold').slideDown()
+        
 		$('.cost-header .fa-angle-double-down').hide()
 		$('.cost-header .fa-angle-double-up').show()
 		
+        $('.cost-header-label').slideUp()
+        
+        $('.cost-header-after').slideDown()
+        
 		$('.cost-header').addClass('date-details-clicked')
-		
+        
 		selectedEventObj.costSlide = true
 	} else {
-		$('.cost-unfold').css('display', 'none')
-		$('.cost-unfold').show()
 		$('.cost-unfold').slideUp()
-		$('.cost-header .fa-angle-double-down').show()
+
+        $('.cost-header .fa-angle-double-down').show()
 		$('.cost-header .fa-angle-double-up').hide()
+        
+        $('.cost-header-after').slideUp()
+        
+        $('.cost-header-label').slideDown()
+
 		
 		$('.cost-header').removeClass('date-details-clicked')
 
@@ -1068,19 +1086,32 @@ $('main').on('click', '.cost-header' , (e)=>{
 
 $('main').on('click', '.event-header' , (e)=>{
 	if (!selectedEventObj.eventSlide){
-		$('.event-unfold').css('display', 'flex')
 		$('.event-unfold').hide()
 		$('.event-unfold').slideDown()
+        
 		$('.event-header .fa-angle-double-down').hide()
 		$('.event-header .fa-angle-double-up').show()
+        
+        $('.event-header-label').slideUp()
+
+        $('.event-name').slideDown()
+        
+        
 		$('.event-header').addClass('date-details-clicked')
+        
 		selectedEventObj.eventSlide = true
 	} else {
-		$('.event-unfold').css('display', 'none')
-		$('.event-unfold').show()
-		$('.event-unfold').slideUp()
+
+        $('.event-unfold').slideUp()
+
 		$('.event-header .fa-angle-double-down').show()
 		$('.event-header .fa-angle-double-up').hide()
+        
+        $('.event-name').slideUp()
+
+        $('.event-header-label').slideDown()
+        
+
 		$('.event-header').removeClass('date-details-clicked')
 
 		selectedEventObj.eventSlide = false
@@ -1089,20 +1120,32 @@ $('main').on('click', '.event-header' , (e)=>{
 
 $('main').on('click', '.restaurant-header' , (e)=>{
 	if (!selectedEventObj.restaurantSlide){
-		$('.restaurant-unfold').css('display', 'flex')
 		$('.restaurant-unfold').hide()
 		$('.restaurant-unfold').slideDown()
-			$('.restaurant-header .fa-angle-double-down').hide()
-			$('.restaurant-header .fa-angle-double-up').show()
-$('.restaurant-header').addClass('date-details-clicked')
+        
+        $('.restaurant-header .fa-angle-double-down').hide()
+        $('.restaurant-header .fa-angle-double-up').show()
+        
+        $('.restaurant-header-label').slideUp()
+        
+        $('.restaurant-name').slideDown()
+        
+        $('.restaurant-header').slideDown()
+        
+        $('.restaurant-header').addClass('date-details-clicked')
+        
 		selectedEventObj.restaurantSlide = true
 	} else {
-		$('.restaurant-unfold').css('display', 'none')
-		$('.restaurant-unfold').show()
 		$('.restaurant-unfold').slideUp()
-				$('.restaurant-header .fa-angle-double-down').show()
-				$('.restaurant-header .fa-angle-double-up').hide()
-$('.restaurant-header').removeClass('date-details-clicked')
+
+        $('.restaurant-header .fa-angle-double-down').show()
+        $('.restaurant-header .fa-angle-double-up').hide()
+        
+        $('.restaurant-name').slideUp()
+        
+        $('.restaurant-header-label').slideDown()
+        
+        $('.restaurant-header').removeClass('date-details-clicked')
 
 		selectedEventObj.restaurantSlide = false
 	}

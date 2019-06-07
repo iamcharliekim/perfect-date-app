@@ -328,7 +328,6 @@ input.location {
 	border: 2px solid white;
 	margin: 10px auto;
 	padding: 10px;
-	width: 95%;
 	color: white;
 	width: 100%
 }
@@ -392,16 +391,14 @@ span.zomato-price {
 	position: absolute;
 	right: 2%;
     padding: 5px;
-    font-size: 16px;
-    background-color: inherit;
-	box-shadow: 1px 1px 1px 1px black;
-    color: white;
+    cursor: pointer;
     border: 2px solid #AEFFD8;
-    background:  linear-gradient(
+	background:  linear-gradient(
       rgba(29, 30, 34, 0.1),
       rgba(29, 30, 34, 0.2)
     ), url(images/bgimage.jpg);
-    cursor: pointer
+	color: white;
+	font-size: 18px;
 	
 }
 
@@ -585,8 +582,9 @@ span.noResultsLocation, span.noResultsQuery {
 }
 
 .results {
-	width: 95%;
+	width: 98%;
 	max-width: 540px;
+    padding: 0 5px
 }
 
 .itin-msg {
@@ -597,10 +595,13 @@ span.noResultsLocation, span.noResultsQuery {
 	margin-bottom: 10px;
 
 }
-.itin-msg h2 {
+.itin-msg h1 {
 	color: white;
 	margin: 5px;
 	text-align: center;
+    border-bottom: 2px solid white;
+    width: 100%;
+    padding-bottom: 10px
 }
 
 .date-details {
@@ -611,11 +612,20 @@ span.noResultsLocation, span.noResultsQuery {
 	flex-direction: column;
 	align-items: center;
 	padding: 0px 0;
-		justify-content: center;
-	
+    justify-content: center;
+    padding: 10px;
 
 }
 
+.date-details .event-img-wrapper, .date-details .zomato-img-wrapper {
+        width: 260px;
+        height: 196px;
+    }
+
+.date-details .event-img, .date-details .zomato-img {
+    width: 100%;
+    height: 100%;
+}
 .weather-cost-wrapper {
 
 }
@@ -646,7 +656,6 @@ span.noResultsLocation, span.noResultsQuery {
 }
 
 .date-details header {
-	padding: 8px;
 	width: 100%;
 
 }
@@ -766,11 +775,12 @@ span.event-address, span.restaurant-address {
 }
 
 .restaurant-unfold span.restaurant-address {
-	padding-bottom: 5px
+	padding-bottom: 10px
 }
 
-.restaurant-unfold .restaurant-btns-wrapper {
-	margin-top: 15px
+.restaurant-unfold button {
+    	margin-top: 15px;
+
 }
 
 span.eventAddress{
@@ -780,9 +790,6 @@ span.eventAddress{
 	justify-content: center;
 	align-items: flex-start;
 	padding-bottom: 5px
-}
-.restaurant-details span.eventDirections {
-
 }
 
 
@@ -797,7 +804,8 @@ div.restaurant-details {
 
 span.restaurant-foodType {
 	padding: 5px 0 ;
-	padding-bottom: 0
+	padding-bottom: 0;
+    font-size: 18px
 }
 
 .zomatoResults .eventDateTime {
@@ -839,6 +847,7 @@ span.restaurant-foodType {
 	align-items: center;
 	justify-content: center;
 	text-align: center;
+    padding: 0
 	
 }
 
@@ -856,7 +865,16 @@ span.restaurant-foodType {
       rgba(29, 30, 34, 0.1),
       rgba(29, 30, 34, 0.1)
     ), url(images/bgimage.jpg);
-	color: white
+	color: #AEFFD8;
+    padding: 10px;
+}
+
+.cost-header-label, .event-header-label, .restaurant-header-label {
+    font-size: 30px;
+    color: white;
+    width: 100%;
+    background-color: black;
+    padding: 10px
 }
 
 span.event-name, span.restaurant-name {
@@ -872,6 +890,13 @@ span.event-name, span.restaurant-name {
 	margin: 15px auto;
 	color: white;
 	
+}
+
+.date-details-clicked {
+}
+
+.date-details-clicked .fa-angle-double-up {
+    
 }
 
 .spinner-bg {
@@ -967,9 +992,10 @@ span.event-name, span.restaurant-name {
 }
 
 @media (min-width: 540px){
-	.eventResults{
+	.eventResults {
 		max-width: 580px;
 	}
+    
 	.responsive-div {
 		display: flex;
 		flex-direction: row;
@@ -1004,6 +1030,10 @@ span.event-name, span.restaurant-name {
 		width: 50%
 	}
 	
+    .restaurant-details span.eventDirections {
+        padding-top: 5px;
+        padding-bottom: 0px;
+    }
 }
 
 
@@ -1014,5 +1044,40 @@ span.event-name, span.restaurant-name {
     
     .inner-nav {
         display: flex;
+    }
+}
+
+@media (min-width: 1200px){
+    .date-details {
+        min-width: 1100px;
+    }
+    .event-restaurant-details-wrapper {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: flex-start;
+    }
+    
+    .cost {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+    
+    .event-details, .restaurant-details {
+        width: 49%;
+        margin: 0;
+    }
+    
+    .event-header, .restaurant-header {
+        height: 145px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .date-details .event-img-wrapper, .date-details .zomato-img-wrapper {
+        width: 280px;
+        height: 210px;
     }
 }
