@@ -262,7 +262,9 @@ $('main').on('click', '.start-btn', (e)=>{
 // EVENT-SEARCH-SUBMIT
 $('main').on('submit', '.event-search-form', (e)=>{
 	e.preventDefault();
-	
+    
+    displayLoader();
+
 	$('.results').empty();
     $('.no-results').empty();
 
@@ -275,7 +277,6 @@ $('main').on('submit', '.event-search-form', (e)=>{
 	let seatGeekURLcityState = `https://api.seatgeek.com/2/events?client_id=${selectedEventObj.seatGeekApiKey}&venue.city=${city}&venue.state=${state}&range=5mi`
 	
 	fetch(seatGeekURLcityState).then(response=>{
-		displayLoader();
 		if (response.status === 200){
 				return response.json()	
 			} else {
@@ -415,8 +416,11 @@ $('main').on('submit', '.event-search-form', (e)=>{
 
 // EVENT-SELECT
 $('main').on('click', '.eventResults > .event-select', (e)=>{
-	let selectedEventID;
 	
+    let selectedEventID;
+    
+	displayLoader()
+    
 	if (e.target.id){
 		selectedEventID = e.target.id
 	} else {
@@ -431,7 +435,6 @@ $('main').on('click', '.eventResults > .event-select', (e)=>{
 	let seatGeekURLbyID = `https://api.seatgeek.com/2/events/${selectedEventID}?client_id=${selectedEventObj.seatGeekApiKey}`
 	
 	fetch(seatGeekURLbyID).then(response=>{
-		displayLoader();
 		
 		if (response.status === 200){
 				return response.json()	
@@ -496,7 +499,8 @@ $('main').on('click', '.eventResults > .event-select', (e)=>{
 // RESTAURANT-SEARCH-SUBMIT
 $('main').on('submit', '.yelp-search-form', (e)=>{
 	e.preventDefault();
-    
+    displayLoader()
+
     $('.results').empty();
     $('.no-results').empty();
 	
@@ -524,7 +528,6 @@ $('main').on('submit', '.yelp-search-form', (e)=>{
         
         console.log('newLocation:', googleGetCoorsURL)
         fetch(googleGetCoorsURL).then(response=>{
-            displayLoader()
             if (response.status === 200){
                     return response.json()	
                 } else {
@@ -803,6 +806,8 @@ $('main').on('submit', '.yelp-search-form', (e)=>{
 // RESTAURANT-SELECT
 $('main').on('click', '.zomatoResults > .event-select', (e)=>{
 	
+    displayLoader()
+
 	let selectedEventID;
     
     let cuisineQuery = $('.yelp-queryString').val()
@@ -832,7 +837,6 @@ $('main').on('click', '.zomatoResults > .event-select', (e)=>{
 
 	
 		fetch(zomatoApiURLByID, headers).then(response=>{
-			displayLoader();
 			if (response.status === 200){
 					return response.json()	
 				} else {
@@ -841,7 +845,6 @@ $('main').on('click', '.zomatoResults > .event-select', (e)=>{
 				}
 			}).then(resDetails =>{
 				
-				hideLoader();
 			
 				console.log(resDetails)
 			
@@ -861,6 +864,8 @@ $('main').on('click', '.zomatoResults > .event-select', (e)=>{
 					}
 
 				}).then(responseJson =>{
+                    hideLoader();
+
 					console.log(responseJson)
 					let zomatoAddress = responseJson.results[0].formatted_address
 
