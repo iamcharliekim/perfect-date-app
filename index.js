@@ -122,6 +122,17 @@ function timeParser(dateObj){
 	return [dateString, timestring]
 }
 
+// AUTO-COMPLETE ACTIVATORS
+function activateEventLocationSearch(){
+            let eventLocationInput = document.getElementById('event-location')
+            let autocomplete = new google.maps.places.Autocomplete(eventLocationInput)
+        }
+
+function activateRestaurantLocationSearch(){
+            let restaurantLocationInput = document.getElementById('restaurant-location')
+            let autocomplete = new google.maps.places.Autocomplete(restaurantLocationInput)
+        }
+
 // PAGE-GENERATOR: HOME
 function mainPageGenerator(){
 	return `<div class="hero">
@@ -142,7 +153,7 @@ function entertainmentPageGenerator(){
 		<form action="" class="event-search-form">
 			<legend><h2>Search and Select Event</h2></legend>
 				<label>Location (format: city, state-code)
-					<input type="text" class="search-input e-search location" placeholder="Location" id="location">
+					<input type="text" class="search-input e-search location" placeholder="Location" id="event-location">
 				</label>
 				<button type="submit" class="submit-btn">Search</button>
 		</form>
@@ -150,6 +161,8 @@ function entertainmentPageGenerator(){
 		<div class="results"></div>
 
 	    <div class="no-results"></div>
+
+	   <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDOvfuKaaRuYocVQWNl9ICi3wadIephDyc&libraries=places&callback=activateEventLocationSearch"></script>
 `
 }
 
@@ -160,11 +173,11 @@ function foodAndDrinksPageGenerator(){
 			<legend><h2>Search/Select Restaurant</h2></legend>
 				
                 <label>Cuisine (Leave Blank for All Results):
-				<input type="text" class="search-input yelp-queryString" placeholder="Mexican, Chinese, Korean..." id="location">		
+				<input type="text" class="search-input yelp-queryString" placeholder="Mexican, Chinese, Korean..." id="cuisine">		
 				</label>
 				
 				<label>Location:
-				<input type="text" class="search-input location yelp-locations" placeholder="Location" id="location">
+				<input type="text" class="search-input location yelp-locations" placeholder="Location" id="restaurant-location">
 				</label>
 
 				<button type="submit" class="submit-btn">Search</button>
@@ -178,6 +191,7 @@ function foodAndDrinksPageGenerator(){
     
         <div class="no-results"></div>
 
+        <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDOvfuKaaRuYocVQWNl9ICi3wadIephDyc&libraries=places&callback=activateRestaurantLocationSearch"></script>
     `
 }
 
@@ -271,7 +285,7 @@ $('main').on('submit', '.event-search-form', (e)=>{
 	let city = $('.e-search').val().split(',')[0].trim()
 	
 	let state = $('.e-search').val().split(',')[1].trim()
-	
+    
 	selectedEventObj.origLocation = `${city}, ${state}`;
 	
 	let seatGeekURLcityState = `https://api.seatgeek.com/2/events?client_id=${selectedEventObj.seatGeekApiKey}&venue.city=${city}&venue.state=${state}&range=5mi`
@@ -306,10 +320,11 @@ $('main').on('submit', '.event-search-form', (e)=>{
 				let eventVenue = eventsArr[i].venue.name
 				let eventID = eventsArr[i].id
 				let eventIMG = eventsArr[i].performers[0].image
-				
-				console.log(eventIMG)
+                let eventCoors = {
+                    lat: eventsArr[i].venue.location.lat,
+                    lon: eventsArr[i].venue.location.lon
+                }
 
-				
 				
 				let eventPrice = `~$${eventsArr[i].stats.average_price*2}`
 				
@@ -345,7 +360,8 @@ $('main').on('submit', '.event-search-form', (e)=>{
 				let addressArr = eventAddress.split(' ')
 				let eventAddressURI = addressArr.join('+')
 				let googleMapsLinkURL = `https://www.google.com/maps/dir/?api=1&origin=${selectedEventObj.origLocation}&destination=${eventAddressURI}`
-					
+                
+                
 					resultDiv = `
 					<div class="eventResults" id=${eventID}>
 						<header>${eventTitle}</header>
@@ -379,12 +395,11 @@ $('main').on('submit', '.event-search-form', (e)=>{
 								</div>
 
 								<span class="event-price">
-									<i class="fas fa-ticket-alt"></i>
-										Tickets (2): <span class="eventCostVal">${eventPrice}</span>
+									<i class="fas fa-ticket-alt"></i> Price x 2: <span class="eventCostVal">${eventPrice}</span>
 
 								<div class="event-btn-wrapper">
 									<a href="${eventURL}" target="_blank">
-										<button class="eventURL">DETAILS</button>
+										<button class="eventURL">TICKETS</button>
 									</a>
 								</div>
 							</div>
@@ -406,13 +421,13 @@ $('main').on('submit', '.event-search-form', (e)=>{
 
 					}
 				}
-			
 				})
-
-
 			}
 		})
 })
+
+    
+
 
 // EVENT-SELECT
 $('main').on('click', '.eventResults > .event-select', (e)=>{
@@ -520,13 +535,14 @@ $('main').on('submit', '.yelp-search-form', (e)=>{
 	
     
     if (zomatoLocation !== selectedEventObj.eventLocation){
+        
         zomatoCity = zomatoLocation.split(',')[0].split(' ').join(
         '+')
         zomatoState= zomatoLocation.split(',')[1].split(' ').join(
         '+')
+        
         let googleGetCoorsURL = `https://maps.googleapis.com/maps/api/geocode/json?address=${zomatoCity}${zomatoState}&key=${selectedEventObj.googleApiKey}`
         
-        console.log('newLocation:', googleGetCoorsURL)
         fetch(googleGetCoorsURL).then(response=>{
             if (response.status === 200){
                     return response.json()	
@@ -539,8 +555,6 @@ $('main').on('submit', '.yelp-search-form', (e)=>{
                 let newLocationLat = coors.results[0].geometry.location.lat
                 let newLocationLng = coors.results[0].geometry.location.lng
                 
-                console.log(newLocationLat, newLocationLng)
-
                 zomatoApiURL = `https://developers.zomato.com/api/v2.1/search?q=${zomatoSearchQuery}&lat=${newLocationLat}&lon=${newLocationLng}&radius=${zomatoRadius}`
 
                 fetch(zomatoApiURL, headers).then(response=>{
@@ -556,8 +570,6 @@ $('main').on('submit', '.yelp-search-form', (e)=>{
                         hideLoader();
 
                         let foodAndDrinkArr = foodanddrink.restaurants
-
-                        console.log(foodAndDrinkArr)
 
                         if (foodAndDrinkArr.length === 0){
                             let resultDiv = `
@@ -965,7 +977,7 @@ $('main').on('click', '.zomatoResults > .event-select', (e)=>{
 											</div>
 
 											<div class="restaurant-btns-wrapper">
-													<a href="${selectedEventObj.eventDetailsLink}" target="_blank"><button class="event-link">Details</button></a>
+													<a href="${selectedEventObj.eventDetailsLink}" target="_blank"><button class="event-link">TICKETS</button></a>
 											</div>
 
 										</div>
