@@ -440,7 +440,7 @@ function clickAndSubmitHandlers(){
 		
 		let perPageResults = 10
 
-		let seatGeekURLcityState = `https://api.seatgeek.com/2/events?client_id=${selectedEventObj.seatGeekApiKey}&venue.city=${city}&venue.state=${state}&range=5mi&datetime_utc.gt=${formattedCurrentDate}&sort=datetime_utc.asc&per_page=${perPageResults}&page=1`
+		let seatGeekURLcityState = `https://api.seatgeek.com/2/events?client_id=${selectedEventObj.seatGeekApiKey}&venue.city=${city}&venue.state=${state}&range=5mi&datetime_local.gte=${formattedCurrentDate}&sort=datetime_local.asc&per_page=${perPageResults}&page=1`
 
 		fetch(seatGeekURLcityState).then(response=>{
 			if (response.status === 200){
