@@ -158,8 +158,7 @@ function entertainmentPageGenerator(){
 				</label>
 
 				<label>Date
-					<input type="text" class="search-input date-input" placeholder="01/12/2019" id="date">
-					<div id="z"></div>
+					<input type="text" id="date" />
 				</label>
 
 
@@ -167,21 +166,15 @@ function entertainmentPageGenerator(){
 		</form>
 
 		<div class="results"></div>
-
+	
 	    <div class="no-results"></div>
+		
+		<div class="paginate-events"></div>
 
 	   <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDOvfuKaaRuYocVQWNl9ICi3wadIephDyc&libraries=places&callback=activateEventLocationSearch"></script>
 `
 }
 
-$('main').find('#z').datepicker({
-    inline: true,
-    altField: '#date'
-});
-
-$('main').find('#date').change(function(){
-    $('main').find('#z').datepicker('setDate', $(this).val());
-});
 
 
 
@@ -231,6 +224,14 @@ function appendPage(page){
 		$('.yelp-locations').val(selectedEventObj.restaurantLocation)
         $('.yelp-queryString').val(selectedEventObj.zomatoSearchQuery)
 	}
+	
+	
+	$(function(){
+		$('#date').datepicker();
+
+	})
+
+	
 }
 
 
@@ -289,39 +290,10 @@ $('.back').on('click', (e)=>{
 })	
 }
 
-function clickAndSubmitHandlers(){
-// START-BTN
-$('main').on('click', '.start-btn', (e)=>{
-	appendPage(selectedEventObj.history[selectedEventObj.historyCounter])
-	geoLocate()
-})
-
-// EVENT-SEARCH-SUBMIT
-$('main').on('submit', '.event-search-form', (e)=>{
-	e.preventDefault();
-    
-    displayLoader();
-
-	$('.results').empty();
-    $('.no-results').empty();
-
-	let city = $('.e-search').val().split(',')[0].trim()
-	
-	let state = $('.e-search').val().split(',')[1].trim()
-    
-	selectedEventObj.origLocation = `${city}, ${state}`;
-	
-	let seatGeekURLcityState = `https://api.seatgeek.com/2/events?client_id=${selectedEventObj.seatGeekApiKey}&venue.city=${city}&venue.state=${state}&range=5mi`
-	
-	fetch(seatGeekURLcityState).then(response=>{
-		if (response.status === 200){
-				return response.json()	
-			} else {
-                hideLoader()
-				throw new Error(response.statusText)
-			}
-		}).then(responseJson =>{
+function handleEventResults(responseJson){
+		
 			hideLoader();
+
 			let eventsArr = responseJson.events
 			let resultDiv
 
@@ -436,9 +408,136 @@ $('main').on('submit', '.event-search-form', (e)=>{
 					}
 				})
 			}
-		})
-})
+	}
 
+function clickAndSubmitHandlers(){
+	// START-BTN
+	$('main').on('click', '.start-btn', (e)=>{
+		appendPage(selectedEventObj.history[selectedEventObj.historyCounter])
+		geoLocate()
+	})
+
+	// EVENT-SEARCH-SUBMIT
+	$('main').on('submit', '.event-search-form', (e)=>{
+		e.preventDefault();
+
+		displayLoader();
+
+		$('.results').empty();
+		$('.no-results').empty();
+		$('.paginate-events').empty()
+		
+		// PARSE DATE TO PROPER FORMAT FOR SEATGEEK API
+		let currentDate = $('#date').val().split('/')
+		let formattedCurrentDate = `${currentDate[2]}-${currentDate[0]}-${currentDate[1]}`
+		console.log(formattedCurrentDate)
+
+		let city = $('.e-search').val().split(',')[0].trim()
+
+		let state = $('.e-search').val().split(',')[1].trim()
+
+		selectedEventObj.origLocation = `${city}, ${state}`;
+		
+		let perPageResults = 10
+
+		let seatGeekURLcityState = `https://api.seatgeek.com/2/events?client_id=${selectedEventObj.seatGeekApiKey}&venue.city=${city}&venue.state=${state}&range=5mi&datetime_utc.gt=${formattedCurrentDate}&sort=datetime_utc.asc&per_page=${perPageResults}&page=1`
+
+		fetch(seatGeekURLcityState).then(response=>{
+			if (response.status === 200){
+					return response.json()	
+				} else {
+					hideLoader()
+					throw new Error(response.statusText)
+				}
+			}).then(responseJson =>{
+				console.log(responseJson)
+				handleEventResults(responseJson)
+				
+				// CALCULATE TOTAL RESULTS TO SHOW PER PAGE BASED ON TOTAL RESULTS 
+				let linkSum = responseJson.meta.total/responseJson.meta.per_page
+				let paginateLink = []
+				let paginateCounter = 0
+				
+				// PUSH LINK TAGS CORRESPONDING TO TOTAL NUMBER OF RESULTS INTO paginateLink ARRAY
+				for (let i = 1; i <= linkSum; i++){
+					 paginateLink.push(`<a href="#" class="paginate">${i}</a>`)	
+				}
+				
+				// LOOP THRU paginateLink ARRAY TO APPEND perPageResults AMOUNT OF LINKS
+				for (let i = 0; i < perPageResults; i++){
+					$('.paginate-events').append(paginateLink[i])
+					paginateCounter++
+				}
+				
+				// CREATE NEXT-LINK AND APPEND TO EXISTING PAGINATE-LINKS DIV
+				let next = `<a href="#" class="next">NEXT >></a>`
+
+				$('.paginate-events').append(next)
+				
+				// NEXT-LINK CLICK-HANDLER: FETCH NEXT PAGE, AND HANDLE RESULTS
+				$('.next').on('click', (e)=>{
+					e.preventDefault()
+
+					console.log(paginateCounter)
+					let seatGeekPage = `https://api.seatgeek.com/2/events?client_id=${selectedEventObj.seatGeekApiKey}&venue.city=${city}&venue.state=${state}&range=5mi&datetime_utc.gt=${formattedCurrentDate}&sort=datetime_utc.asc&per_page=10&page=${paginateCounter}`
+
+						fetch(seatGeekPage).then(response=>{
+								if (response.status === 200){
+										return response.json()	
+									} else {
+										hideLoader()
+										throw new Error(response.statusText)
+									}
+								}).then(responseJson =>{
+									$('.results').empty();
+									$('.no-results').empty();
+									handleEventResults(responseJson)
+								
+							
+									// EMPTY CURRENT SET OF PAGINATE-LINKS AND APPEND NEXT 10 LINKS
+									$('.paginate-events').empty();
+
+									for (let i = paginateCounter; i < paginateCounter+10; i++){
+											$('.paginate-events').append(paginateLink[i]);
+									}
+									
+									// APPEND NEXT-LINK TO EXISTING SET OF PAGINATE-LINKS
+									$('.paginate-events').append(next)
+									
+									// INCREMENT paginateCounter by 10
+									paginateCounter += 10
+
+						})
+				})
+
+				// PAGINATE-LINK-HANDLER
+				$('.paginate').on('click', (e)=>{
+						e.preventDefault()
+						console.log(e.target.textContent)
+						let seatGeekPage = `https://api.seatgeek.com/2/events?client_id=${selectedEventObj.seatGeekApiKey}&venue.city=${city}&venue.state=${state}&range=5mi&datetime_utc.gt=${formattedCurrentDate}&sort=datetime_utc.asc&per_page=10&page=${e.target.textContent}`
+
+						fetch(seatGeekPage).then(response=>{
+								if (response.status === 200){
+										return response.json()	
+									} else {
+										hideLoader()
+										throw new Error(response.statusText)
+									}
+								}).then(responseJson =>{
+									console.log('seatGeekPaginate', responseJson)
+
+									$('.results').empty();
+									$('.no-results').empty();
+									handleEventResults(responseJson)
+						})
+				})
+		})						
+	})
+}
+
+
+
+	
 // EVENT-SELECT
 $('main').on('click', '.eventResults > .event-select', (e)=>{
 	
@@ -1170,7 +1269,7 @@ $('main').on('click', '.restaurant-header' , (e)=>{
 		selectedEventObj.restaurantSlide = false
 	}
 })	
-}
+
 
 function startApp(){
 	start();
