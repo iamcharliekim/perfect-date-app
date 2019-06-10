@@ -123,6 +123,7 @@ function timeParser(dateObj){
 }
 
 // AUTO-COMPLETE ACTIVATORS
+
 function activateEventLocationSearch(){
             let eventLocationInput = document.getElementById('event-location')
             let autocomplete = new google.maps.places.Autocomplete(eventLocationInput)
@@ -155,6 +156,13 @@ function entertainmentPageGenerator(){
 				<label>Location (format: city, state-code)
 					<input type="text" class="search-input e-search location" placeholder="Location" id="event-location">
 				</label>
+
+				<label>Date
+					<input type="text" class="search-input date-input" placeholder="01/12/2019" id="date">
+					<div id="z"></div>
+				</label>
+
+
 				<button type="submit" class="submit-btn">Search</button>
 		</form>
 
@@ -165,6 +173,17 @@ function entertainmentPageGenerator(){
 	   <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDOvfuKaaRuYocVQWNl9ICi3wadIephDyc&libraries=places&callback=activateEventLocationSearch"></script>
 `
 }
+
+$('main').find('#z').datepicker({
+    inline: true,
+    altField: '#date'
+});
+
+$('main').find('#date').change(function(){
+    $('main').find('#z').datepicker('setDate', $(this).val());
+});
+
+
 
 // PAGE-GENERATOR: RESTAURANTS
 function foodAndDrinksPageGenerator(){
@@ -214,7 +233,9 @@ function appendPage(page){
 	}
 }
 
-// NAVBAR: HOME-LOGO
+
+function navBarHandlers(){
+	// NAVBAR: HOME-LOGO
 $('.home-logo').on('click', (e)=>{
     selectedEventObj.historyCounter= 0;
 	appendPage(mainPageGenerator())
@@ -265,8 +286,10 @@ $('.back').on('click', (e)=>{
 	appendPage(selectedEventObj.history[selectedEventObj.historyCounter])
 	$('main').show()
 	
-})
+})	
+}
 
+function clickAndSubmitHandlers(){
 // START-BTN
 $('main').on('click', '.start-btn', (e)=>{
 	appendPage(selectedEventObj.history[selectedEventObj.historyCounter])
@@ -295,17 +318,15 @@ $('main').on('submit', '.event-search-form', (e)=>{
 				return response.json()	
 			} else {
                 hideLoader()
-
 				throw new Error(response.statusText)
 			}
 		}).then(responseJson =>{
-			console.log(responseJson)
 			hideLoader();
 			let eventsArr = responseJson.events
 			let resultDiv
 
+			// NO-RESULTS HANDLER
 			if (eventsArr.length === 0){
-				
 				 resultDiv = `
 						<div class="eventResults noResults">
 						  No listed events in <span class="noResultsLocation">${city}, ${state}</span>
@@ -324,10 +345,8 @@ $('main').on('submit', '.event-search-form', (e)=>{
                     lat: eventsArr[i].venue.location.lat,
                     lon: eventsArr[i].venue.location.lon
                 }
-
-				
+	
 				let eventPrice = `~$${eventsArr[i].stats.average_price*2}`
-				
                 
 				if (eventPrice === '~$0'){
 					eventPrice = 'N/A'
@@ -337,6 +356,7 @@ $('main').on('submit', '.event-search-form', (e)=>{
 				let eventLong = eventsArr[i].venue.location.lon
 				let eventLat = eventsArr[i].venue.location.lat
 				
+				// FETCH-CALL TO GOOGLE-GEOCODE-API TO EXTRACT/FORMAT EVENT ADDRESSES
 				const googleApiURL = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${eventLat},${eventLong}&key=${selectedEventObj.googleApiKey}`
 				
 				fetch(googleApiURL).then(response => {
@@ -347,94 +367,85 @@ $('main').on('submit', '.event-search-form', (e)=>{
 					}
 
 				}).then(responseJson =>{
-					
-				let eventAddress = responseJson.results[0].formatted_address
-				console.log(eventAddress)
+					let eventAddress = responseJson.results[0].formatted_address
+					let eventAddressSplit = eventAddress.split(',')
 				
-				let eventAddressSplit = eventAddress.split(',')
-				
-				let eventStreet = eventAddressSplit[0]
-				let eventCity = eventAddressSplit[1].substring(1)
-				let eventStateZip = eventAddressSplit[2].substring(1)
+					let eventStreet = eventAddressSplit[0]
+					let eventCity = eventAddressSplit[1].substring(1)
+					let eventStateZip = eventAddressSplit[2].substring(1)
 
-				let addressArr = eventAddress.split(' ')
-				let eventAddressURI = addressArr.join('+')
-				let googleMapsLinkURL = `https://www.google.com/maps/dir/?api=1&origin=${selectedEventObj.origLocation}&destination=${eventAddressURI}`
-                
-                
+					let addressArr = eventAddress.split(' ')
+					let eventAddressURI = addressArr.join('+')
+					
+					let googleMapsLinkURL = `https://www.google.com/maps/dir/?api=1&origin=${selectedEventObj.origLocation}&destination=${eventAddressURI}`
+					
 					resultDiv = `
-					<div class="eventResults" id=${eventID}>
-						<header>${eventTitle}</header>
-						<button class="event-select"> SELECT </button>
-						<span class="eventDateTime">
-									<i class="far fa-calendar"></i>
-									${timeParser(eventDateTime)[0]} @ ${timeParser(eventDateTime)[1]}
-								</span>
-						<div class="responsive-div">
+						<div class="eventResults" id=${eventID}>
+							<header>${eventTitle}</header>
+							<button class="event-select"> SELECT </button>
+							<span class="eventDateTime">
+										<i class="far fa-calendar"></i>
+										${timeParser(eventDateTime)[0]} @ ${timeParser(eventDateTime)[1]}
+									</span>
+							<div class="responsive-div">
+								<div class="responsive-left">
+									<div class="event-img-wrapper">
+										<img src="${eventIMG}" class="event-img">
+									</div>
+								</div>
 
-							<div class="responsive-left">
+								<div class="responsive-right">
+									<div class="event-venue-address">
+										<span class="eventVenue">${eventVenue}</span>
 
-								<div class="event-img-wrapper">
-									<img src="${eventIMG}" class="event-img">
+										<span class="eventAddress">
+											<span class="eventStreet">${eventStreet}</span>
+											<span class="eventCityStateZip">${eventCity}, ${eventStateZip}</span>
+										</span>
+
+										<span class="eventDirections">
+											<i class="fas fa-directions"></i> 
+											<a href="${googleMapsLinkURL}" target="_blank" class="google-address">Get Directions</a>
+										</span>
+									</div>
+
+									<span class="event-price">
+										<i class="fas fa-ticket-alt"></i> Price x 2: <span class="eventCostVal">${eventPrice}</span>
+
+									<div class="event-btn-wrapper">
+										<a href="${eventURL}" target="_blank">
+											<button class="eventURL">TICKETS</button>
+										</a>
+									</div>
 								</div>
 							</div>
-							<div class="responsive-right">
-								
-								<div class="event-venue-address">
-									<span class="eventVenue">${eventVenue}</span>
-
-									<span class="eventAddress">
-										<span class="eventStreet">${eventStreet}</span>
-										<span class="eventCityStateZip">${eventCity}, ${eventStateZip}</span>
-									</span>
-
-									<span class="eventDirections">
-										<i class="fas fa-directions"></i> 
-										<a href="${googleMapsLinkURL}" target="_blank" class="google-address">Get Directions</a>
-									</span>
-								</div>
-
-								<span class="event-price">
-									<i class="fas fa-ticket-alt"></i> Price x 2: <span class="eventCostVal">${eventPrice}</span>
-
-								<div class="event-btn-wrapper">
-									<a href="${eventURL}" target="_blank">
-										<button class="eventURL">TICKETS</button>
-									</a>
-								</div>
-							</div>
-
-						</div>
 						</div>`
-								
-		
-
-				$('.results').append(resultDiv)
 					
-				let imgArr = $('.event-img')
-				
-				console.log(imgArr)
-				for (let i = 0 ; i < imgArr.length; i++){
-					if(imgArr[i].src.includes('null')){
-						imgArr[i].parentNode.append('image not available')
-						imgArr[i].remove()
+					// APPEND EVENT-RESULT DIVS
+					$('.results').append(resultDiv)
+					
+					// CHECK TO SEE IF EVENT-IMG IS NOT-AVAILABLE AND REPLACE IMAGE WITH 'IMAGE NOT AVAILABLE' TEXT
+					let imgArr = $('.event-img')
 
+					for (let i = 0 ; i < imgArr.length; i++){
+						if(imgArr[i].src.includes('null')){
+							imgArr[i].parentNode.append('image not available')
+							imgArr[i].remove()
+
+						}
 					}
-				}
 				})
 			}
 		})
 })
 
-    
-
-
 // EVENT-SELECT
 $('main').on('click', '.eventResults > .event-select', (e)=>{
 	
-    let selectedEventID;
-    
 	displayLoader()
+	
+	// WHEN USER SELECTS EVENT, TRAVERSE THE DOM TO EXTRACT EVENT'S ID
+    let selectedEventID;
     
 	if (e.target.id){
 		selectedEventID = e.target.id
@@ -442,15 +453,15 @@ $('main').on('click', '.eventResults > .event-select', (e)=>{
 		selectedEventID = $(e.target).parents('.eventResults')[0].id	
 	}
 	
+	// ADD SELECTED-EVENT CLASS TO SELECTED-EVENT
 	if (e.target.className !== 'eventURL'){
 		$(`#${selectedEventID}`).addClass('selected-event')
 	}
 	
-	
+	// MAKE FETCH-CALL TO SEATGEEKAPI BY EVENT-ID
 	let seatGeekURLbyID = `https://api.seatgeek.com/2/events/${selectedEventID}?client_id=${selectedEventObj.seatGeekApiKey}`
 	
 	fetch(seatGeekURLbyID).then(response=>{
-		
 		if (response.status === 200){
 				return response.json()	
 			} else {
@@ -460,55 +471,47 @@ $('main').on('click', '.eventResults > .event-select', (e)=>{
 		}).then(event =>{	
 			
 			hideLoader();
-			console.log(event)
+			console.log('Event Lookup By ID:', event)
 			
 			selectedEventObj.eventIMG = event.performers[0].image
 			let eventLat = event.venue.location.lat
 			let eventLong = event.venue.location.lon
 			
 			const googleApiURL = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${eventLat},${eventLong}&key=${selectedEventObj.googleApiKey}`
-
-				fetch(googleApiURL).then(response => {
-					if (response.status === 200){
-						return response.json()	
-					} else {
-						throw new Error(response.statusText)
-					}
-
-				}).then(responseJson =>{
-					console.log(responseJson)
-		
 			
+			// MAKE FETCH-CALL TO GOOGLE-API TO GET AND FORMAT SELECTED-EVENT-ADDRESS
+			fetch(googleApiURL).then(response => {
+				if (response.status === 200){
+					return response.json()	
+				} else {
+					throw new Error(response.statusText)
+				}
+
+			}).then(responseJson =>{
+				// STORE ALL RELEVANT-INFO ON SELECTED-EVENT
 				selectedEventObj.eventSelected= true
 				selectedEventObj.eventName= event.title
 				selectedEventObj.eventTime= event.datetime_local
 				selectedEventObj.eventAddress= responseJson.results[0].formatted_address
-				selectedEventObj.eventID=selectedEventID
+				selectedEventObj.eventID= selectedEventID
 				selectedEventObj.eventDetailsLink = event.url
 				selectedEventObj.eventCoors= {
 					lat: event.venue.location.lat,
 					long: event.venue.location.lon
-				    }
+				}
 				selectedEventObj.eventVenue= event.venue.name
 				selectedEventObj.eventType=event.type
 				selectedEventObj.eventLocation= event.venue.display_location
 				selectedEventObj.eventCost=event.stats.average_price * 2
-			
-		
-		console.log(selectedEventObj)
-		
-		// STORE EVENTOBJ IN FIREBASE
-		
-		axios.post('https://perfect-date-app.firebaseio.com/event.json', selectedEventObj)
-			
-	
-		// MOVE USER TO NEXT-PAGE
-		appendPage(foodAndDrinksPageGenerator());		
-		
-		$('.yelp-locations').val(selectedEventObj.eventLocation)	
 
+				console.log('selectedEventObj after Event-Selected:', selectedEventObj)
+				
+		// MOVE USER TO NEXT-PAGE AND SET LOCATION INPUT TO SELECTED-EVENT'S LOCATION
+				appendPage(foodAndDrinksPageGenerator());		
+
+				$('.yelp-locations').val(selectedEventObj.eventLocation)	
+			})
 	})
-})
 })
 
 // RESTAURANT-SEARCH-SUBMIT
@@ -533,7 +536,7 @@ $('main').on('submit', '.yelp-search-form', (e)=>{
 	  }
 	}
 	
-    
+// IF RESTAURANT-LOCATION IS DIFFERENT FROM SELECTED-EVENT-LOCATION, FIND COORDINATES OF NEW LOCATION VIA GOOGLE API
     if (zomatoLocation !== selectedEventObj.eventLocation){
         
         zomatoCity = zomatoLocation.split(',')[0].split(' ').join(
@@ -555,9 +558,10 @@ $('main').on('submit', '.yelp-search-form', (e)=>{
                 let newLocationLat = coors.results[0].geometry.location.lat
                 let newLocationLng = coors.results[0].geometry.location.lng
                 
-                zomatoApiURL = `https://developers.zomato.com/api/v2.1/search?q=${zomatoSearchQuery}&lat=${newLocationLat}&lon=${newLocationLng}&radius=${zomatoRadius}`
-
-                fetch(zomatoApiURL, headers).then(response=>{
+				// USE COORDINATES FOR NEW LOCATION TO MAKE FETCH CALL TO ZOMATO API
+				 zomatoApiURL = `https://developers.zomato.com/api/v2.1/search?q=${zomatoSearchQuery}&lat=${newLocationLat}&lon=${newLocationLng}&radius=${zomatoRadius}`
+				 
+				 fetch(zomatoApiURL, headers).then(response=>{
                     displayLoader()
                     if (response.status === 200){
                             return response.json()	
@@ -570,7 +574,8 @@ $('main').on('submit', '.yelp-search-form', (e)=>{
                         hideLoader();
 
                         let foodAndDrinkArr = foodanddrink.restaurants
-
+						
+						// NO-RESULTS HANDLER
                         if (foodAndDrinkArr.length === 0){
                             let resultDiv = `
                                     <div class="eventResults noResults">
@@ -581,6 +586,7 @@ $('main').on('submit', '.yelp-search-form', (e)=>{
                                     $('.no-results').append(resultDiv)
 
                         } else {
+							// EXTRACT ALL RELEVANT INFO FROM ZOMATO-API CALL
                             for (let i = 0 ; i < foodAndDrinkArr.length; i++){
                                 let zomatoName = foodAndDrinkArr[i].restaurant.name
                                 let zomatoCuisines = foodAndDrinkArr[i].restaurant.cuisines
@@ -600,6 +606,7 @@ $('main').on('submit', '.yelp-search-form', (e)=>{
 
                                 const googleApiURL = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${zomatoLat},${zomatoLong}&key=${selectedEventObj.googleApiKey}`
 
+								// USE EXTRACTED LAT/LONG TO MAKE A CALL TO GOOGLE-API TO GET FORMATTED ADDRESS
                                 fetch(googleApiURL).then(response => {
                                     if (response.status === 200){
                                         return response.json()	
@@ -621,8 +628,6 @@ $('main').on('submit', '.yelp-search-form', (e)=>{
                                 let zomatoAddressURI = addressArr.join('+')
                                 let eventAddressURI = selectedEventObj.eventAddress.split(' ').join('+')
                                 let googleMapsLinkURL = `https://www.google.com/maps/dir/?api=1&origin=${eventAddressURI}&destination=${zomatoAddressURI}`	
-
-
 
                                 let resultDiv = `
                                     <div class="zomatoResults" id=${zomatoID}>
@@ -661,176 +666,173 @@ $('main').on('submit', '.yelp-search-form', (e)=>{
                                             <a href="${zomatoDetailsURL}" target="_blank"><button class="eventURL">DETAILS</button></a>
                                         </div>
                                     </div>`
-
+									
+									// APPEND RESULT-DIVS 
                                    $('.results').append(resultDiv)
 									
+									// LOOP THRU RESULTS AND IF IMAGE IS NOT AVAILABLE, REPLACE IMG WITH "IMAGE NOT AVAILABLE"
 									let imgArr = $('.zomato-img')
 								
-										console.log(imgArr)
 									for (let i = 0 ; i < imgArr.length; i++){
 										if(!imgArr[i].src.includes('zmtcdn')){
 											imgArr[i].parentNode.append('image not available')
 											imgArr[i].remove()
 										}
 									}
-                                })
-
+                                }) 
                             }
                         }
-                })
-            })
-    } else {
+                	})
+		})
+	
+	}  else {
+		// IF RESTAURANT-LOCATION IS THE SAME AS EVENT THEN SKIP FETCH CALL FOR COORDINATES TO GOOGLEAPI AND USE STORED COORS IN SELECTED-EVENT-OBJ TO MAKE CALL TO ZOMATO-API
+		
+		zomatoApiURL = `https://developers.zomato.com/api/v2.1/search?q=${zomatoSearchQuery}&lat=${selectedEventObj.eventCoors.lat}&lon=${selectedEventObj.eventCoors.long}&radius=${zomatoRadius}`
+ 
 
-        zomatoApiURL = `https://developers.zomato.com/api/v2.1/search?q=${zomatoSearchQuery}&lat=${selectedEventObj.eventCoors.lat}&lon=${selectedEventObj.eventCoors.long}&radius=${zomatoRadius}`
+		fetch(zomatoApiURL, headers).then(response=>{
+                    displayLoader()
+                    if (response.status === 200){
+                            return response.json()	
+                        } else {
+                            throw new Error(response.statusText)
+                            hideLoader()
+                        }
+                    }).then(foodanddrink =>{
 
+                        hideLoader();
 
-
-        fetch(zomatoApiURL, headers).then(response=>{
-            displayLoader()
-            if (response.status === 200){
-                    return response.json()	
-                } else {
-                    throw new Error(response.statusText)
-                    hideLoader()
-                }
-            }).then(foodanddrink =>{
-
-                hideLoader();
-
-                let foodAndDrinkArr = foodanddrink.restaurants
-
-                console.log(foodAndDrinkArr)
-
-                if (foodAndDrinkArr.length === 0){
-                    let resultDiv = `
-                            <div class="eventResults noResults">
-                                No <span class="noResultsQuery">${zomatoSearchQuery} </span> restaurants in <span class="noResultsLocation">${selectedEventObj.eventLocation}</span>
-                            </div>`
-
-
-                            $('.no-results').append(resultDiv)
-
-                } else {
-                    for (let i = 0 ; i < foodAndDrinkArr.length; i++){
-                        let zomatoName = foodAndDrinkArr[i].restaurant.name
-                        let zomatoCuisines = foodAndDrinkArr[i].restaurant.cuisines
-
-
-                        let zomatoMenuURL = foodAndDrinkArr[i].restaurant.menu_url
-                        let zomatoDetailsURL = foodAndDrinkArr[i].restaurant.url
-                        let zomatoPrice = foodAndDrinkArr[i].restaurant.average_cost_for_two
-                        let zomatoRatings = foodAndDrinkArr[i].restaurant.user_rating.aggregate_rating
-                        let zomatoRatingsText = foodAndDrinkArr[i].restaurant.user_rating.rating_text
-                        let zomatoID = foodAndDrinkArr[i].restaurant.R.res_id
-						let zomatoIMG = foodAndDrinkArr[i].restaurant.thumb
-
-                        let zomatoLat = foodAndDrinkArr[i].restaurant.location.latitude
-                        let zomatoLong = foodAndDrinkArr[i].restaurant.location.longitude
-
-                        const googleApiURL = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${zomatoLat},${zomatoLong}&key=${selectedEventObj.googleApiKey}`
-
-                        fetch(googleApiURL).then(response => {
-                            if (response.status === 200){
-                                return response.json()	
-                            } else {
-                                throw new Error(response.statusText)
-                            }
-
-                        }).then(responseJson =>{
-
-                        let zomatoAddress = responseJson.results[0].formatted_address
+                        let foodAndDrinkArr = foodanddrink.restaurants
 						
-						let zomatoAddressSplit = zomatoAddress.split(',')
-						let zomatoStreet = zomatoAddressSplit[0]
-						let zomatoCity = zomatoAddressSplit[1].substring(1)
-						let zomatoStateZip = zomatoAddressSplit[2].substring(1)
+						// NO-RESULTS HANDLER
+                        if (foodAndDrinkArr.length === 0){
+                            let resultDiv = `
+                                    <div class="eventResults noResults">
+                                        No <span class="noResultsQuery">${zomatoSearchQuery} </span> restaurants in <span class="noResultsLocation">${selectedEventObj.eventLocation}</span>
+                                    </div>`
+
+
+                                    $('.no-results').append(resultDiv)
+
+                        } else {
+							// EXTRACT ALL RELEVANT INFO FROM ZOMATO-API CALL
+                            for (let i = 0 ; i < foodAndDrinkArr.length; i++){
+                                let zomatoName = foodAndDrinkArr[i].restaurant.name
+                                let zomatoCuisines = foodAndDrinkArr[i].restaurant.cuisines
+
+
+                                let zomatoMenuURL = foodAndDrinkArr[i].restaurant.menu_url
+                                let zomatoDetailsURL = foodAndDrinkArr[i].restaurant.url
+                                let zomatoPrice = foodAndDrinkArr[i].restaurant.average_cost_for_two
+                                let zomatoRatings = foodAndDrinkArr[i].restaurant.user_rating.aggregate_rating
+                                let zomatoRatingsText = foodAndDrinkArr[i].restaurant.user_rating.rating_text
+                                let zomatoID = foodAndDrinkArr[i].restaurant.R.res_id
+								let zomatoIMG = foodAndDrinkArr[i].restaurant.thumb
+
+
+                                let zomatoLat = foodAndDrinkArr[i].restaurant.location.latitude
+                                let zomatoLong = foodAndDrinkArr[i].restaurant.location.longitude
+
+                                const googleApiURL = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${zomatoLat},${zomatoLong}&key=${selectedEventObj.googleApiKey}`
 								
+								// USE EXTRACTED LAT/LONG TO MAKE A CALL TO GOOGLE-API TO GET FORMATTED ADDRESS
+                                fetch(googleApiURL).then(response => {
+                                    if (response.status === 200){
+                                        return response.json()	
+                                    } else {
+                                        throw new Error(response.statusText)
+                                    }
+
+                                }).then(responseJson =>{
+		
+
+                                let zomatoAddress = responseJson.results[0].formatted_address
 								
-                        let addressArr = zomatoAddress.split(' ')
-                        let zomatoAddressURI = addressArr.join('+')
-                        let eventAddressURI = selectedEventObj.eventAddress.split(' ').join('+')
-                        let googleMapsLinkURL = `https://www.google.com/maps/dir/?api=1&origin=${eventAddressURI}&destination=${zomatoAddressURI}`	
+								let zomatoAddressSplit = zomatoAddress.split(',')
+								let zomatoStreet = zomatoAddressSplit[0]
+								let zomatoCity = zomatoAddressSplit[1].substring(1)
+								let zomatoStateZip = zomatoAddressSplit[2].substring(1)
+								
+                                let addressArr = zomatoAddress.split(' ')
+                                let zomatoAddressURI = addressArr.join('+')
+                                let eventAddressURI = selectedEventObj.eventAddress.split(' ').join('+')
+                                let googleMapsLinkURL = `https://www.google.com/maps/dir/?api=1&origin=${eventAddressURI}&destination=${zomatoAddressURI}`	
 
-
-
-                        let resultDiv = `
-                            <div class="zomatoResults" id=${zomatoID}>
+                                let resultDiv = `
+                                    <div class="zomatoResults" id=${zomatoID}>
                                         <header>${zomatoName}</header>
                                         <button class="event-select"> SELECT </button>
 
                                         <span class="eventDateTime">
-										<i class="fas fa-utensils"></i>	 			
-				
-										<i>${zomatoCuisines}</i></span>
+											<i class="fas fa-utensils"></i>				
+											<i>${zomatoCuisines}</i>
+										</span>
+		
+										 <span class="zomato-ratings">
+											Ratings: <strong>${zomatoRatings}/5</strong>
+										</span>
+
+										<div class="zomato-img-wrapper">
+											<img src="${zomatoIMG}" class="zomato-img">
+										</div>
+
+                                        <div class="event-venue-address">
+                                            <span class="eventAddress">
+												<span class="zomatoStreet">${zomatoStreet}</span>
+												<span class="zomatoCityStateZip">${zomatoCity}, ${zomatoStateZip}</span>
+											</span>
+											<span class="eventDirections">
+												<i class="fas fa-directions"></i> 
+													<a href="${googleMapsLinkURL}" target="_blank" class="google-address">Get Directions</a>
+											</span>
 										
-										<div class="responsive-div">
-											<div class="responsive-left">
+                                        </div>
+                                         <span class="zomato-price">
+											Dinner for 2: <strong>~$${zomatoPrice}</strong></span>
 
-												<div class="zomato-img-wrapper">
-													<img src="${zomatoIMG}" class="zomato-img">
-												</div>
-										</div>
-											
-										<div class="responsive-right">
-											<span class="zomato-ratings">Ratings: <strong>${zomatoRatings}/5</strong></span>
-
-											<div class="event-venue-address">
-												<span class="eventAddress">
-													<span class="zomatoStreet">${zomatoStreet}</span>
-													<span class="zomatoCityStateZip">${zomatoCity}, ${zomatoStateZip}</span>
-												</span>
-												<span class="eventDirections">
-													<i class="fas fa-directions"></i> 
-														<a href="${googleMapsLinkURL}" target="_blank" class="google-address">Get Directions</a>
-												</span>
-
-											</div>
-											   <span class="zomato-price">
-												Dinner for 2: <strong>~$${zomatoPrice}</strong></span>
-
-											<div class="result-btns-wrapper">
-												<a href="${zomatoMenuURL}" target="_blank"><button class="eventURL">MENU</button></a>
-												<a href="${zomatoDetailsURL}" target="_blank"><button class="eventURL">DETAILS</button></a>
-											</div>
-										</div>
+                                        <div class="result-btns-wrapper">
+                                            <a href="${zomatoMenuURL}" target="_blank"><button class="eventURL">MENU</button></a>
+                                            <a href="${zomatoDetailsURL}" target="_blank"><button class="eventURL">DETAILS</button></a>
+                                        </div>
                                     </div>`
-
-                           			$('.results').append(resultDiv)
-						
+									
+									// APPEND RESULT-DIVS 
+                                   $('.results').append(resultDiv)
+									
+									// LOOP THRU RESULTS AND IF IMAGE IS NOT AVAILABLE, REPLACE IMG WITH "IMAGE NOT AVAILABLE"
 									let imgArr = $('.zomato-img')
 								
-										console.log(imgArr)
 									for (let i = 0 ; i < imgArr.length; i++){
 										if(!imgArr[i].src.includes('zmtcdn')){
 											imgArr[i].parentNode.append('image not available')
 											imgArr[i].remove()
 										}
 									}
-
-                    })
-
-                }
-           }
-        })
-    }
+                                }) 
+                            }
+                        }
+                	})
+	}
 })
 
 // RESTAURANT-SELECT
 $('main').on('click', '.zomatoResults > .event-select', (e)=>{
 	
     displayLoader()
-
-	let selectedEventID;
-    
-    let cuisineQuery = $('.yelp-queryString').val()
 	
+	let cuisineQuery = $('.yelp-queryString').val()
+
+	// WHEN USER SELECTS RESTAURANT, TRAVERSE THE DOM TO EXTRACT RESTAURANT'S ID
+	let selectedEventID;
+
 	if (e.target.id){
 		selectedEventID = e.target.id
 	} else {
 		selectedEventID = $(e.target).parents('.zomatoResults')[0].id	
 	}
 	
-	
+	// ADD SELECTED-EVENT CLASS TO SELECTED-RESTAURANT
 	if (e.target.className !== 'zomatoResults'){
 		$(`#${selectedEventID}`).addClass('selected-event')
 	}
@@ -858,13 +860,13 @@ $('main').on('click', '.zomatoResults > .event-select', (e)=>{
 			}).then(resDetails =>{
 				
 			
-				console.log(resDetails)
+				console.log('ZomatoAPI lookup by ID:', resDetails)
 			
 				let zomatoLong = resDetails.location.longitude
 				let zomatoLat = resDetails.location.latitude
 				selectedEventObj.restaurantIMG = resDetails.thumb
 				
-				
+				// USE LAT/LONG COORS TO MAKE CALL TO GOOGLEAPI TO EXTRACT FORMATTED ADDRESS
 				const googleApiURL = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${zomatoLat},${zomatoLong}&key=${selectedEventObj.googleApiKey}`
 
 				
@@ -877,8 +879,6 @@ $('main').on('click', '.zomatoResults > .event-select', (e)=>{
 
 				}).then(responseJson =>{
                     hideLoader();
-
-					console.log(responseJson)
 					let zomatoAddress = responseJson.results[0].formatted_address
 
 					let restaurantAddressURI = zomatoAddress.split(' ').join('+')
@@ -1032,8 +1032,10 @@ $('main').on('click', '.zomatoResults > .event-select', (e)=>{
 									</div>
 
 										`
-							
+							// APPEND FINAL-PAGE
 							appendPage(finalPageHTML)
+					
+							// HIDE HEADER-NAMES AND DIVS TO BE UNFOLDED VIA CLICK-EVENT
                             $('.cost-header-after').hide()
 							$('.cost-unfold').hide()
 							$('.event-unfold').hide()
@@ -1041,10 +1043,8 @@ $('main').on('click', '.zomatoResults > .event-select', (e)=>{
 							$('.restaurant-unfold').hide()
 							$('.restaurant-name').hide()
 							$('.fa-angle-double-up').hide()
-                    
-                            console.log($('.event-header').css('height'))
-                    
-                  
+                                        
+                  			// CHECK THRU ALL EVENT-IMG AND ZOMATO-IMG AND IF IMAGE IS NOT AVAILABLE, REPLACE IMGS WITH "IMAGE NOT AVAILABLE" TEXT
 							let zomatoIMGArr = $('.zomato-img')
 								
 									for (let i = 0 ; i < zomatoIMGArr.length; i++){
@@ -1052,22 +1052,23 @@ $('main').on('click', '.zomatoResults > .event-select', (e)=>{
 											zomatoIMGArr[i].parentNode.append('image not available')
 											zomatoIMGArr[i].remove()
 										}
-									}													
+									}	
+					
 							let eventIMGArr = $('.event-img')
-		
+							
 									for (let i = 0 ; i < eventIMGArr.length; i++){
 										if(eventIMGArr[i].src.includes('null')){
 											eventIMGArr[i].parentNode.append('image not available')
 											eventIMGArr[i].remove()
 										}
 									}
-					
 						
-							console.log(selectedEventObj)
+							console.log('selectedEventObj final:', selectedEventObj)
 						})
 					})
 })
 
+// UNFOLD COST-DIV
 $('main').on('click', '.cost-header' , (e)=>{
 	
 	if (!selectedEventObj.costSlide){
@@ -1101,6 +1102,7 @@ $('main').on('click', '.cost-header' , (e)=>{
 	}
 })
 
+// UNFOLD EVENT-DIV
 $('main').on('click', '.event-header' , (e)=>{
 	if (!selectedEventObj.eventSlide){
 		$('.event-unfold').hide()
@@ -1135,6 +1137,7 @@ $('main').on('click', '.event-header' , (e)=>{
 	}
 })
 
+// UNFOLD RESTAURANT-DIV
 $('main').on('click', '.restaurant-header' , (e)=>{
 	if (!selectedEventObj.restaurantSlide){
 		$('.restaurant-unfold').hide()
@@ -1166,7 +1169,13 @@ $('main').on('click', '.restaurant-header' , (e)=>{
 
 		selectedEventObj.restaurantSlide = false
 	}
-})
+})	
+}
 
+function startApp(){
+	start();
+	navBarHandlers();
+	clickAndSubmitHandlers();
+}
 
-start()
+$(startApp)

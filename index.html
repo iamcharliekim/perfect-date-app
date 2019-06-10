@@ -7,6 +7,8 @@
 	<link rel="stylesheet" href="main.css">
 	<link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
 	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datepicker/0.6.5/datepicker.css">	
+
 	<title>Perfect Date App</title>
 </head>
 <body>
@@ -47,33 +49,16 @@
 		
 	<main>
     
-    <form action="" class="event-search-form">
-			<legend><h2>Search and Select Event</h2></legend>
-				<label>Location (format: city, state-code)
-					<input type="text" class="search-input e-search location" placeholder="Location" id="event-location">
-				</label>
-				<button type="submit" class="submit-btn">Search</button>
-		</form>
-
-		<div class="results"></div>
-
-	    <div class="no-results"></div>
+    
     
 	</main>
-	
-	<script>
-        function activatePlacesSearch(){
-            let eventLocationInput = document.getElementById('event-location')
-            let autocomplete = new google.maps.places.Autocomplete(eventLocationInput)
-        }
-        
-        
-    </script>
+
 	
 
-	<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDOvfuKaaRuYocVQWNl9ICi3wadIephDyc&libraries=places&callback=activatePlacesSearch"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/datepicker/0.6.5/datepicker.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.js"></script>
 	<script src="index.js"></script>
+	
 </body>
 </html>

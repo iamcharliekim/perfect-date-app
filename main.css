@@ -270,6 +270,9 @@ header h2 {
 	border: 2px solid lightgray;
 }
 
+.date-input {
+	width: 50%
+}
 
 .radius-label{
 	width: 100%;
@@ -1076,6 +1079,10 @@ span.event-name, span.restaurant-name {
         align-items: center;
     }
     
+	.event-unfold, .restaurant-unfold {
+		height: 310px;
+	}
+	
     .date-details .event-img-wrapper, .date-details .zomato-img-wrapper {
         width: 280px;
         height: 210px;
