@@ -301,9 +301,10 @@ function handleEventResults(responseJson){
 			if (eventsArr.length === 0){
 				 resultDiv = `
 						<div class="eventResults noResults">
-						  No listed events in <span class="noResultsLocation">${city}, ${state}</span>
+						  No listed events in <span class="noResultsLocation">${selectedEventObj.origLocation}</span>
 						</div>`
 				 $('.no-results').append(resultDiv)
+				
 			} 
 		
 			for (let i = 0; i < eventsArr.length; i++){
@@ -479,7 +480,7 @@ function clickAndSubmitHandlers(){
 					e.preventDefault()
 
 					console.log(paginateCounter)
-					let seatGeekPage = `https://api.seatgeek.com/2/events?client_id=${selectedEventObj.seatGeekApiKey}&venue.city=${city}&venue.state=${state}&range=5mi&datetime_utc.gt=${formattedCurrentDate}&sort=datetime_utc.asc&per_page=10&page=${paginateCounter}`
+					let seatGeekPage = `https://api.seatgeek.com/2/events?client_id=${selectedEventObj.seatGeekApiKey}&venue.city=${city}&venue.state=${state}&range=5mi&datetime_local.gte=${formattedCurrentDate}&sort=datetime_local.asc&per_page=10&page=${paginateCounter}`
 
 						fetch(seatGeekPage).then(response=>{
 								if (response.status === 200){
