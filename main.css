@@ -270,13 +270,21 @@ header h2 {
 	border: 2px solid lightgray;
 }
 
-#date {
+.date-range-div {
+	width: 100%;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	
+}
+
+#date, #range {
 	padding: 15px;
-	width: 50%;
+	width: 90%;
 	border-radius: 5rem;
 	font-size: 16px;
 	border: 2px solid lightgray;
-	margin: 10px 0 
+	margin: 10px 0 ;
 }
 
 
@@ -346,16 +354,50 @@ input.location {
 	width: 100%
 }
 
-.paginate-events {
+.paginate-div{
 	width: 100%;
 	display: flex;
+	flex-direction: row;
 	justify-content: center;
 	align-items: center;
-	font-size: 20px
+	color: white;
+	
+}
+.paginate-prev {
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	align-items: center;
+	font-size: 20px;
+}
+
+.paginate-prev a {
+	color: white;
+}
+
+.paginate-events {
+	width: 80%;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: center;
 }
 
 .paginate-events a {
-	margin: 0 10px
+	font-size: 20px;
+		color: white;
+		margin: 0 10px
+
+
+}
+
+.paginate-next a{
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	align-items: center;
+	font-size: 20px;
+	color: white
 }
 
 span.zomato-ratings {
