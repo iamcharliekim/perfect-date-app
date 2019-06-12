@@ -70,8 +70,7 @@ function forwardBtnDisable(){
 }
 
 // FUNCTION: GEOLOCATE USER'S COORDINATES AND AUTOMATICALLY SUBMIT EVENT-SEARCH
-function geoLocate(){
-        
+function geoLocate(){ 
     let seatGeekURLGeoLocation = `https://api.seatgeek.com/2/events?client_id=${selectedEventObj.seatGeekApiKey}&geoip=true`
 
 		fetch(seatGeekURLGeoLocation).then(response => {
@@ -236,13 +235,11 @@ function appendPage(page){
         $('.yelp-queryString').val(selectedEventObj.zomatoSearchQuery)
 	}
 	
-	
-	$(function(){
-		$('#date').datepicker();
-
-	})
-
-	
+	if (selectedEventObj.historyCounter === 2){
+		$(function(){
+			$('#date').datepicker();
+		})
+	}
 }
 
 // HANDLE-EVENT-RESULTS
@@ -369,7 +366,7 @@ function handleEventResults(responseJson){
 
 // PAGINATE-EVENT-RESULTS
 function paginateEventResults(responseJson){
-				// CALCULATE TOTAL RESULTS TO SHOW PER PAGE BASED ON TOTAL RESULTS 
+				// CALCULATE TOTAL PAGINATE-LINKS 
 				let totalResults = responseJson.meta.total
 				let totalLinks = Math.ceil(responseJson.meta.total/responseJson.meta.per_page)
 				
@@ -378,14 +375,12 @@ function paginateEventResults(responseJson){
 				
 				console.log('totalLinks:', totalLinks)
 			
-				// PUSH LINK TAGS CORRESPONDING TO TOTAL NUMBER OF RESULTS INTO paginateLinkArr ARRAY
+				// PUSH LINK TAGS CORRESPONDING TO TOTAL NUMBER OF RESULT-LINKS INTO paginateLinkArr ARRAY
 				for (let i = 1; i <= totalLinks; i++){
 					 paginateLinkArr.push(`<a href="#" class="paginate">${i}</a>`)	
 				}
-				
-				console.log('paginateLinkArr:', paginateLinkArr)
-			
-				// LOOP THRU paginateLinkArr ARRAY TO APPEND 10 AMOUNT OF LINKS at a time
+
+				// LOOP THRU paginateLinkArr ARRAY TO APPEND 10-PAGINATE-LINKS at a time
 				for (let i = 0; i < 10; i++){
 					$('.paginate-events').append(paginateLinkArr[i])
 				}
@@ -394,47 +389,32 @@ function paginateEventResults(responseJson){
 				
 				// CREATE NEXT-LINK AND APPEND TO EXISTING PAGINATE-LINKS DIV
 				let next = `<a href="#" class="next">NEXT >></a>`
-
 				$('.paginate-next').append(next)				
-			
 			
 				// CREATE NEXT-LINK AND APPEND TO EXISTING PAGINATE-LINKS DIV
 				let prev = `<a href="#" class="prev"><< PREV</a>`
-
 				$('.paginate-prev').append(prev)
 			
-				// DISABLE PREV/NEXT BTNS
+				// FUNCTION: DISABLE PREV/NEXT BTNS
 				function disablePrevNextBtns(){
-					if (paginateCounter <= 1){
-						$('.prev').hide()
-					} else {
-						$('.prev').show()
-					}
-			
-					if (paginateCounter === totalLinks){
-						$('.next').hide()
-					} else {
-						$('.next').show()
-					}
+					paginateCounter === 1 ? $('.prev').hide(): $('.prev').show()
+					paginateCounter === totalLinks ? $('.next').hide(): $('.next').show()
 				}
 				
+				// DISABLE PREV/NEXT BTNS 
 				disablePrevNextBtns()
 				
-				
-				$('.prev').on('click', (e)=>{
-					
+				// PREV CLICK-HANDLER
+				$('.prev').on('click', (e)=>{	
 					e.preventDefault()
-					
 					console.log(paginateCounter, totalLinks)
-					
+					// DECREMENT PAGINATE-COUNTER BY 1 AND DISABLE PREV/NEXT BTNS IF NECESSARY
 					paginateCounter = Number(paginateCounter - 1)
-					
 					disablePrevNextBtns()
-						
-					console.log(paginateCounter)
 
+					console.log(paginateCounter)
 					
-					
+					// MAKE GET-REQUEST TO PREVIOUS PAGE
 					let seatGeekPage = `https://api.seatgeek.com/2/events?client_id=${selectedEventObj.seatGeekApiKey}&lat=${selectedEventObj.origLocationCoors.lat}&lon=${selectedEventObj.origLocationCoors.long}&range=${selectedEventObj.eventSearchRange}mi&datetime_local.gte=${selectedEventObj.eventSearchDate}&sort=datetime_local.asc&per_page=10&page=${paginateCounter}`
 
 					fetch(seatGeekPage).then(response=>{
@@ -445,65 +425,38 @@ function paginateEventResults(responseJson){
 									throw new Error(response.statusText)
 								}
 							}).then(responseJson =>{
+								// EMPTY PREVIOUS RESULTS AND HANDLE NEW RESULTS
 								$('.results').empty();
-								$('.no-results').empty();
-
 								handleEventResults(responseJson)
-
 							
-					// EMPTY CURRENT SET OF PAGINATE-LINKS AND APPEND NEXT 10 LINKS
-							
+								// IF USER IS ON LAST SET OF 10 PAGINATE-LINKS ON PAGE AND CLICKS "PREV" EMPTY CURRENT SET OF PAGINATE-LINKS 
 								if (paginateCounter % 10 === 0){
 									$('.paginate-events').empty();
-
+									
+									// AND APPEND NEXT 10 LINKS
 									for (let i = paginateCounter-10; i < paginateCounter; i++){
-											$('.paginate-events').append(paginateLinkArr[i]);
+										$('.paginate-events').append(paginateLinkArr[i]);
 									}
-
-									$('.paginate').on('click', (e)=>{
-										e.preventDefault()
-										console.log(e.target.textContent)
-
-										paginateCounter = Number(e.target.textContent)
-
-										console.log(paginateCounter)
-										disablePrevNextBtns()
-
-										let seatGeekPage = `https://api.seatgeek.com/2/events?client_id=${selectedEventObj.seatGeekApiKey}&lat=${selectedEventObj.origLocationCoors.lat}&lon=${selectedEventObj.origLocationCoors.long}&range=${selectedEventObj.eventSearchRange}mi&datetime_local.gte=${selectedEventObj.eventSearchDate}&sort=datetime_local.asc&per_page=10&page=${paginateCounter}`
-
-										fetch(seatGeekPage).then(response=>{
-												if (response.status === 200){
-														return response.json()	
-													} else {
-														hideLoader()
-														throw new Error(response.statusText)
-													}
-												}).then(responseJson =>{
-													console.log('seatGeekPaginate', responseJson)
-
-													// EMPTY PREVIOUS RESULTS
-													$('.results').empty();
-													$('.no-results').empty();
-
-													// EXTRACT AND APPEND ALL RELEVANT INFO INTO RESULT-CARDS
-													handleEventResults(responseJson)
-										})
-									})
+									
+									// RE-REGISTER CLICK-HANDLER FOR PAGINATE-LINKS
+									paginateLinkHandler();
 								}
 							})
 				})
 
-
-				// PAGINATE-LINK-HANDLER
-				$('.paginate').on('click', (e)=>{
+				// PAGINATE-LINK-HANDLER FUNCTION 
+				function paginateLinkHandler(){
+					$('.paginate').on('click', (e)=>{
 						e.preventDefault()
 						console.log(e.target.textContent)
-						
+
+						// SET PAGINATE-COUNTER TO LINK'S TEXT-CONTENT 
 						paginateCounter = Number(e.target.textContent)
-							
+
 						console.log(paginateCounter)
 						disablePrevNextBtns()
-					
+						
+						// MAKE GET-REQUEST TO CORRESPONDING NUMBER OF LINK
 						let seatGeekPage = `https://api.seatgeek.com/2/events?client_id=${selectedEventObj.seatGeekApiKey}&lat=${selectedEventObj.origLocationCoors.lat}&lon=${selectedEventObj.origLocationCoors.long}&range=${selectedEventObj.eventSearchRange}mi&datetime_local.gte=${selectedEventObj.eventSearchDate}&sort=datetime_local.asc&per_page=10&page=${paginateCounter}`
 
 						fetch(seatGeekPage).then(response=>{
@@ -515,17 +468,16 @@ function paginateEventResults(responseJson){
 									}
 								}).then(responseJson =>{
 									console.log('seatGeekPaginate', responseJson)
-									
 									// EMPTY PREVIOUS RESULTS
 									$('.results').empty();
-									$('.no-results').empty();
-							
 									// EXTRACT AND APPEND ALL RELEVANT INFO INTO RESULT-CARDS
 									handleEventResults(responseJson)
 						})
-				})
-			
-			
+					})
+				}
+				
+				// REGISTER PAGINATE-LINK CLICK-HANDLER
+				paginateLinkHandler()
 			
 				// NEXT-LINK CLICK-HANDLER: FETCH NEXT PAGE, AND HANDLE RESULTS
 				$('.next').on('click', (e)=>{
@@ -533,131 +485,91 @@ function paginateEventResults(responseJson){
 					
 					console.log(paginateCounter, totalLinks)
 					
+					// INCREMENT PAGINATE-COUNTER
 					paginateCounter = Number(paginateCounter + 1)
 					
 					disablePrevNextBtns()
 						
 					console.log(paginateCounter)
-
+					
+					// MAKE GET-REQUEST TO NEXT PAGE 
 					let seatGeekPage = `https://api.seatgeek.com/2/events?client_id=${selectedEventObj.seatGeekApiKey}&lat=${selectedEventObj.origLocationCoors.lat}&lon=${selectedEventObj.origLocationCoors.long}&range=${selectedEventObj.eventSearchRange}mi&datetime_local.gte=${selectedEventObj.eventSearchDate}&sort=datetime_local.asc&per_page=10&page=${paginateCounter}`
 
-						fetch(seatGeekPage).then(response=>{
-								if (response.status === 200){
-										return response.json()	
-									} else {
-										hideLoader()
-										throw new Error(response.statusText)
-									}
-								}).then(responseJson =>{
-									$('.results').empty();
-									$('.no-results').empty();
-							
-									handleEventResults(responseJson)
-								
-							
-									// EMPTY CURRENT SET OF PAGINATE-LINKS AND APPEND NEXT 10 LINKS
-							
-							if ((paginateCounter-1) % 10 === 0){
-								$('.paginate-events').empty();
-							
-								for (let i = paginateCounter-1; i < (paginateCounter-1)+10; i++){
-										$('.paginate-events').append(paginateLinkArr[i]);
+					fetch(seatGeekPage).then(response=>{
+							if (response.status === 200){
+									return response.json()	
+								} else {
+									hideLoader()
+									throw new Error(response.statusText)
 								}
-								
-								$('.paginate').on('click', (e)=>{
-						e.preventDefault()
-						console.log(e.target.textContent)
-						
-						paginateCounter = Number(e.target.textContent)
-							
-						console.log(paginateCounter)
-						disablePrevNextBtns()
-					
-						let seatGeekPage = `https://api.seatgeek.com/2/events?client_id=${selectedEventObj.seatGeekApiKey}&lat=${selectedEventObj.origLocationCoors.lat}&lon=${selectedEventObj.origLocationCoors.long}&range=${selectedEventObj.eventSearchRange}mi&datetime_local.gte=${selectedEventObj.eventSearchDate}&sort=datetime_local.asc&per_page=10&page=${paginateCounter}`
+							}).then(responseJson =>{
+								// EMPTY PREVIOUS RESULTS AND APPEND NEW PAGE
+								$('.results').empty();
+								handleEventResults(responseJson)
 
-						fetch(seatGeekPage).then(response=>{
-								if (response.status === 200){
-										return response.json()	
-									} else {
-										hideLoader()
-										throw new Error(response.statusText)
+								// IF PREVIOUS-PAGE WAS THE LAST OF 10-PAGINATE-LINKS PER PAGE 
+								if ((paginateCounter-1) % 10 === 0){
+									// EMPTY CURRENT SET OF PAGINATE-LINKS
+									$('.paginate-events').empty();
+									
+									// APPEND NEXT 10 LINKS
+									for (let i = paginateCounter-1; i < (paginateCounter-1)+10; i++){
+											$('.paginate-events').append(paginateLinkArr[i]);
 									}
-								}).then(responseJson =>{
-									console.log('seatGeekPaginate', responseJson)
-									
-									// EMPTY PREVIOUS RESULTS
-									$('.results').empty();
-									$('.no-results').empty();
-							
-									// EXTRACT AND APPEND ALL RELEVANT INFO INTO RESULT-CARDS
-									handleEventResults(responseJson)
-						})
-				})
-							}
-									
-									
-									
-									
-									
-						})
-				})
-		}
 
+									// RE-REGISTER PAGINATE-LINK CLICK-HANDLER
+									paginateLinkHandler()
+								}
+							})
+				})				
+}
 
 // NAV-BAR-HANDLERS
 function navBarHandlers(){
 	// NAVBAR: HOME-LOGO
-$('.home-logo').on('click', (e)=>{
-    selectedEventObj.historyCounter= 0;
-	appendPage(mainPageGenerator())
-    selectedEventObj = selectedEventObjReset
-	
-})
-
-// HAMBURGER-MENU
-$('.hamburger').on('click', (e)=>{
-	selectedEventObj.showMenu = !selectedEventObj.showMenu
-
-	if (selectedEventObj.showMenu ){
-		$('main').hide();
-		$('.menu').show()
-	} else {
-		$('main').show();
+	$('.home-logo').on('click', (e)=>{
+		selectedEventObj.historyCounter= 0;
+		appendPage(mainPageGenerator())
+		selectedEventObj = selectedEventObjReset
 		$('.menu').hide()
-	}
-	
-}) 
+		$('main').show()
+	})
 
-// HAMBURGER-MENU: HOME
-$('.menu .home').on('click', (e)=>{
-    selectedEventObj.historyCounter= 0;
-	appendPage(mainPageGenerator())
-    selectedEventObj = selectedEventObjReset
-	$('.menu').hide()
-	$('main').show()
-	
-})
+	// HAMBURGER-MENU
+	$('.hamburger').on('click', (e)=>{
+		selectedEventObj.showMenu = !selectedEventObj.showMenu
 
-$('.nav-new').on('click', (e)=>{
-    selectedEventObj.historyCounter= 0;
-	appendPage(mainPageGenerator())
-    selectedEventObj = selectedEventObjReset
-    
-})
+		if (selectedEventObj.showMenu ){
+			$('main').hide();
+			$('.menu').show()
+		} else {
+			$('main').show();
+			$('.menu').hide()
+		}
+	}) 
 
-// HAMBURGER-MENU: BACK
-$('.back').on('click', (e)=>{
+	// HAMBURGER-MENU: HOME
+	$('.menu .home').on('click', (e)=>{
+		selectedEventObj.historyCounter= 0;
+		appendPage(mainPageGenerator())
+		selectedEventObj = selectedEventObjReset
+		$('.menu').hide()
+		$('main').show()
+	})
 
-	
-	$('.menu').hide()
-	selectedEventObj.historyCounter= selectedEventObj.historyCounter- 2
+	$('.nav-new').on('click', (e)=>{
+		selectedEventObj.historyCounter= 0;
+		appendPage(mainPageGenerator())
+		selectedEventObj = selectedEventObjReset
+	})
 
-
-	
-	appendPage(selectedEventObj.history[selectedEventObj.historyCounter])
-	$('main').show()
-	
-})	
+	// HAMBURGER-MENU: BACK
+	$('.back').on('click', (e)=>{	
+		$('.menu').hide()
+		selectedEventObj.historyCounter= selectedEventObj.historyCounter - 2
+		appendPage(selectedEventObj.history[selectedEventObj.historyCounter])
+		$('main').show()
+	})	
 }
 
 // CLICK-AND-SUBMIT-HANDLERS
@@ -687,9 +599,8 @@ function clickAndSubmitHandlers(){
 			let currentDate = $('#date').val().split('/')
 			let formattedCurrentDate = `${currentDate[2]}-${currentDate[0]}-${currentDate[1]}`
 			console.log(formattedCurrentDate)
-
+			
 			selectedEventObj.eventSearchDate = formattedCurrentDate
-
 
 			// PARSE CITY AND STATE FORM USER-INPUT AND STORE IN SELECTEDEVENTOBJ
 			let city = $('.e-search').val().split(',')[0].trim()
@@ -702,9 +613,11 @@ function clickAndSubmitHandlers(){
 
 			// PRE-SET PER-PAGE RESULTS
 			let perPageResults = 10
-
-
+			
+			// IF USER CHANGES LOCATION FROM ORIGINAL GEOLOCATION LOCATION, 
 			if ($('.e-search').val() !== selectedEventObj.origLocation){
+				
+				// MAKE A GET-REQUEST TO GOOGLEAPI TO OBTAIN LAT/LONG OF NEW LOCATION BASED ON CITY/STATE
 				let googleGetCoorsURL = `https://maps.googleapis.com/maps/api/geocode/json?address=${city}${state}&key=${selectedEventObj.googleApiKey}`
 
 				fetch(googleGetCoorsURL).then(response=>{
@@ -716,16 +629,15 @@ function clickAndSubmitHandlers(){
 						}
 					}).then(coors =>{
 						console.log(coors)
-						let newLocationLat = coors.results[0].geometry.location.lat
-						let newLocationLng = coors.results[0].geometry.location.lng
-
-						selectedEventObj.origLocationCoors.lat = newLocationLat
-						selectedEventObj.origLocationCoors.long = newLocationLng
-
+						
+						// STORE NEW EVENT-LOCATION COORDINATES IN SELECTED-EVENT-OBJ 
+						selectedEventObj.origLocationCoors.lat = coors.results[0].geometry.location.lat
+						selectedEventObj.origLocationCoors.long = coors.results[0].geometry.location.lng
+						
+						// AND MAKE A GET-REQUEST TO SEATGEEKAPI WITH NEW COORDINATES
 						let seatGeekURLgeo = `https://api.seatgeek.com/2/events?client_id=${selectedEventObj.seatGeekApiKey}&lat=${selectedEventObj.origLocationCoors.lat}&lon=${selectedEventObj.origLocationCoors.long}&range=${selectedEventObj.eventSearchRange}mi&datetime_local.gte=${selectedEventObj.eventSearchDate}&sort=datetime_local.asc&per_page=10&page=1`
 
 						fetch(seatGeekURLgeo).then(response=>{
-
 							if (response.status === 200){
 									return response.json()	
 								} else {
@@ -740,12 +652,14 @@ function clickAndSubmitHandlers(){
 								// EXTRACT ALL RELEVANT INFO FROM SEATGEEKAPI + GOOGLEAPI AND APPEND RESULT-CARDS
 								handleEventResults(responseJson)
 
-							paginateEventResults(responseJson)
-
+								// PAGINATE RESULTS
+								paginateEventResults(responseJson)
 							})
 					})
 			} else {
-				// GET-REQUEST TO SEATGEEK API 
+				// ELSE, IF EVENT-LOCATION IS SAME AS GEOLOCATION LINK
+				
+				// THEN USE COORDS STORED IN SELECTED-EVENT-OBJ TO MAKE A GET-REQUEST TO SEATGEEKAPI
 				let seatGeekURLcityState = `https://api.seatgeek.com/2/events?client_id=${selectedEventObj.seatGeekApiKey}&lat=${selectedEventObj.origLocationCoors.lat}&lon=${selectedEventObj.origLocationCoors.long}&range=${selectedEventObj.eventSearchRange}mi&datetime_local.gte=${selectedEventObj.eventSearchDate}&sort=datetime_local.asc&per_page=10&page=1`
 
 				fetch(seatGeekURLcityState).then(response=>{
@@ -764,15 +678,14 @@ function clickAndSubmitHandlers(){
 						handleEventResults(responseJson)
 
 
-		// PAGINATE SEATGEEKAPI SEARCH RESULTS
-					paginateEventResults(responseJson)
+						// PAGINATE SEATGEEKAPI SEARCH RESULTS
+						paginateEventResults(responseJson)
 				})
 			}
-	})
+	})	
 
 	// EVENT-SELECT
 	$('main').on('click', '.eventResults > .event-select', (e)=>{
-
 		displayLoader()
 
 		// WHEN USER SELECTS EVENT, TRAVERSE THE DOM TO EXTRACT EVENT'S ID
@@ -802,9 +715,13 @@ function clickAndSubmitHandlers(){
 			}).then(event =>{	
 
 				hideLoader();
+			
 				console.log('Event Lookup By ID:', event)
-
+				
+				// STORE EVENT-IMG IN SELECTED-EVENT-OBJ
 				selectedEventObj.eventIMG = event.performers[0].image
+			
+				// EXTRACT LAT/LONG COORS OF EVENT-VENUE TO MAKE A CALL TO GOOGLEAPI TO GET FORMATTED ADDRESS
 				let eventLat = event.venue.location.lat
 				let eventLong = event.venue.location.lon
 
@@ -819,6 +736,7 @@ function clickAndSubmitHandlers(){
 					}
 
 				}).then(responseJson =>{
+					
 					// STORE ALL RELEVANT-INFO ON SELECTED-EVENT
 					selectedEventObj.eventSelected= true
 					selectedEventObj.eventName= event.title
@@ -826,20 +744,19 @@ function clickAndSubmitHandlers(){
 					selectedEventObj.eventAddress= responseJson.results[0].formatted_address
 					selectedEventObj.eventID= selectedEventID
 					selectedEventObj.eventDetailsLink = event.url
-					selectedEventObj.eventCoors= {
-						lat: event.venue.location.lat,
-						long: event.venue.location.lon
-					}
 					selectedEventObj.eventVenue= event.venue.name
 					selectedEventObj.eventType=event.type
 					selectedEventObj.eventLocation= event.venue.display_location
 					selectedEventObj.eventCost=event.stats.average_price * 2
+					selectedEventObj.eventCoors= {
+						lat: event.venue.location.lat,
+						long: event.venue.location.lon
+					}
 
 					console.log('selectedEventObj after Event-Selected:', selectedEventObj)
-
-			// MOVE USER TO NEXT-PAGE AND SET LOCATION INPUT TO SELECTED-EVENT'S LOCATION
+					
+					// MOVE USER TO NEXT-PAGE (RESTAURANT-SELECT/SEARCH PAGE) AND SET LOCATION INPUT TO SELECTED-EVENT'S LOCATION
 					appendPage(foodAndDrinksPageGenerator());		
-
 					$('.yelp-locations').val(selectedEventObj.eventLocation)	
 				})
 		})
@@ -1503,7 +1420,6 @@ function clickAndSubmitHandlers(){
 	})	
 }
 	
-
 function startApp(){
 	start();
 	navBarHandlers();
