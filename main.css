@@ -422,6 +422,7 @@ span.zomato-ratings {
 
 span.zomato-price {
 	font-weight: bold;
+	padding: 5px 0
 }
 
 .event-select:hover {
@@ -489,7 +490,7 @@ span.zomato-price {
 }
 span.eventDirections {
 	padding-top: 5px;
-	padding-bottom: 10px
+	padding-bottom: 5px
 }
 
 .event-unfold span.eventDirections {
@@ -513,12 +514,12 @@ span.zomato-price {
 
 .zomatoResults .zomato-ratings {
 	margin-top: 0;
-	padding-bottom: 10px 
+	padding: 5px 0
 }
 
 .zomatoResults .eventAddress {
 	padding-bottom: 5px;
-	margin-top: 10px
+	margin-top: 10px;
 }
 
 span.eventDateTime {
@@ -537,18 +538,24 @@ span.eventVenue {
 	
 }
 
+.paginate-clicked {
+	color: blue;
+	border-bottom: 2px solid white;
+}
 .zomatoResults .google-address {
-	margin: 0
+	margin: 0;
+	font-size: 18px
 }
 
 .event-venue-address {
 	display: flex;
 	flex-direction: column;
-	justify-content: center
+	justify-content: center;
+	padding-bottom: 5px
 }
 
 .event-venue-address span {
-	margin: 0
+	margin: 0;
 }
 
 span.event-price {
@@ -575,6 +582,7 @@ button.eventURL {
 	font-size: 18px;
 	cursor: pointer;
 	margin-top: 15px;
+	margin-bottom: 15px;
 }
 
 button.eventURL:hover {
@@ -605,7 +613,11 @@ button.eventURL:hover {
 	align-items: flex-start;
 	justify-content: center;
 	font-size: 15px
-	
+}
+
+.zomato-range {
+	margin: 10px 0;
+	padding: 15px
 }
 
 .yelp-queryString {
@@ -662,6 +674,36 @@ span.noResultsLocation, span.noResultsQuery {
 	font-weight: bold;
 	text-decoration: none;
 }
+
+.zomato-phoneNumber {
+	padding: 5px 0;
+	margin-bottom: 10px
+}
+
+.zomato-phoneNumber a {
+	color: #AEFFD8;
+	text-decoration: none
+}
+
+.highlightsDiv {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: flex-start;
+}
+
+.showHighLightsBtn {
+	color: white;
+	width: 98%;
+	margin: 15px 5px;
+	margin-top: 0px;
+	margin-left: 0;
+	padding: 5px;
+
+	font-size: 20px;	
+
+}
+
 
 .results {
 	width: 98%;
@@ -866,7 +908,6 @@ span.event-address, span.restaurant-address {
 }
 
 span.eventAddress{
-	font-size: 18px;
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
@@ -892,6 +933,7 @@ span.restaurant-foodType {
 
 .zomatoResults .eventDateTime {
 	width: 85%;
+	padding-bottom: 5px
 }
 
 

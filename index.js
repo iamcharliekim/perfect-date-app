@@ -42,7 +42,8 @@ const selectedEventObjReset = {
                 zomatoSearchQuery: '',
 				costSlide: false,
 				eventSlide: false,
-				restaurantSlide: false
+				restaurantSlide: false,
+				showHighLights: false
 }
 
 // FUNCTIONS: START
@@ -164,11 +165,11 @@ function entertainmentPageGenerator(){
 				</label>
 			<div class="date-range-div">
 				<label>Date
-					<input type="text" id="date" placeholder="06/11/2019"/>
+					<input type="text" id="date" value="06/11/2019"/>
 				</label>
 
 				<label>Range (in Miles)
-					<input type="number" id="range" value=5 />
+					<input type="number" id="range" value=10 />
 				</label>
 			</div>
 
@@ -179,6 +180,8 @@ function entertainmentPageGenerator(){
 	
 	    <div class="no-results"></div>
 		
+		<div id="places"></div>
+
 		<div class="paginate-div">
 			<div class="paginate-prev"></div>
 			<div class="paginate-events"></div>
@@ -200,6 +203,10 @@ function foodAndDrinksPageGenerator(){
 				
 				<label>Location:
 				<input type="text" class="search-input location yelp-locations" placeholder="Location" id="restaurant-location">
+				</label>			
+
+				<label>Range (in Miles):
+				<input type="number" class="search-input zomato-range" placeholder="" id="restaurant-range">
 				</label>
 
 				<button type="submit" class="submit-btn">Search</button>
@@ -212,6 +219,12 @@ function foodAndDrinksPageGenerator(){
 		</div>
     
         <div class="no-results"></div>
+
+		<div class="paginate-div">
+			<div class="paginate-prev"></div>
+			<div class="paginate-events"></div>
+			<div class="paginate-next"></div>
+		</div>
 
         <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDOvfuKaaRuYocVQWNl9ICi3wadIephDyc&libraries=places&callback=activateRestaurantLocationSearch"></script>
     `
@@ -240,6 +253,25 @@ function appendPage(page){
 			$('#date').datepicker();
 		})
 	}
+}
+
+// PAGINATE-ACTIVE-LINK
+function activeLinkColored(paginateCounter){
+	// ACTIVE LINK
+		$('.paginate').css('color', 'white')
+
+		let activeLink = $('.paginate')
+
+		console.log($('.paginate'))
+
+		for (let i = 0 ; i < activeLink.length; i++){
+			console.log(Number(activeLink[i].textContent) === paginateCounter)
+
+			if (Number(activeLink[i].textContent) === paginateCounter){
+				$(activeLink[i]).css('color', '#AEFFD8')
+			}
+		}	
+
 }
 
 // HANDLE-EVENT-RESULTS
@@ -290,8 +322,7 @@ function handleEventResults(responseJson){
 						throw new Error(response.statusText)
 					}
 
-				}).then(responseJson =>{
-					
+				}).then(responseJson =>{					
 					// STORE FORMATTED ADDRESS INTO eventAddress AND EXTRACT STREET/CITY/STATE+ZIP
 					let eventAddress = responseJson.results[0].formatted_address
 					let eventAddressSplit = eventAddress.split(',')
@@ -385,14 +416,18 @@ function paginateEventResults(responseJson){
 					$('.paginate-events').append(paginateLinkArr[i])
 				}
 				
+				// SET LINK-1 TO ACTIVE
+				let activeLink = $('.paginate')
+				$(activeLink[0]).css('color', '#AEFFD8')
+	
 				console.log('paginateCounter:', paginateCounter)
 				
 				// CREATE NEXT-LINK AND APPEND TO EXISTING PAGINATE-LINKS DIV
-				let next = `<a href="#" class="next">NEXT >></a>`
+				let next = `<a href="#" class="next">>></a>`
 				$('.paginate-next').append(next)				
 			
 				// CREATE NEXT-LINK AND APPEND TO EXISTING PAGINATE-LINKS DIV
-				let prev = `<a href="#" class="prev"><< PREV</a>`
+				let prev = `<a href="#" class="prev"><<</a>`
 				$('.paginate-prev').append(prev)
 			
 				// FUNCTION: DISABLE PREV/NEXT BTNS
@@ -427,6 +462,10 @@ function paginateEventResults(responseJson){
 							}).then(responseJson =>{
 								// EMPTY PREVIOUS RESULTS AND HANDLE NEW RESULTS
 								$('.results').empty();
+								
+								// REGISTER ACTIVE-LINK-HANDLER
+								activeLinkColored(paginateCounter)
+						
 								handleEventResults(responseJson)
 							
 								// IF USER IS ON LAST SET OF 10 PAGINATE-LINKS ON PAGE AND CLICKS "PREV" EMPTY CURRENT SET OF PAGINATE-LINKS 
@@ -438,6 +477,9 @@ function paginateEventResults(responseJson){
 										$('.paginate-events').append(paginateLinkArr[i]);
 									}
 									
+									// RE-REGISTER ACTIVE-LINK-HANDLER
+									activeLinkColored(paginateCounter)
+
 									// RE-REGISTER CLICK-HANDLER FOR PAGINATE-LINKS
 									paginateLinkHandler();
 								}
@@ -470,6 +512,11 @@ function paginateEventResults(responseJson){
 									console.log('seatGeekPaginate', responseJson)
 									// EMPTY PREVIOUS RESULTS
 									$('.results').empty();
+							
+									// ACTIVE-LINK
+									$('.paginate').css('color', 'white')
+									$(e.currentTarget).css('color', '#AEFFD8')
+							
 									// EXTRACT AND APPEND ALL RELEVANT INFO INTO RESULT-CARDS
 									handleEventResults(responseJson)
 						})
@@ -505,6 +552,10 @@ function paginateEventResults(responseJson){
 							}).then(responseJson =>{
 								// EMPTY PREVIOUS RESULTS AND APPEND NEW PAGE
 								$('.results').empty();
+							
+								// REGISTER ACTIVE-LINK-HANDLER
+								activeLinkColored(paginateCounter)
+
 								handleEventResults(responseJson)
 
 								// IF PREVIOUS-PAGE WAS THE LAST OF 10-PAGINATE-LINKS PER PAGE 
@@ -516,6 +567,9 @@ function paginateEventResults(responseJson){
 									for (let i = paginateCounter-1; i < (paginateCounter-1)+10; i++){
 											$('.paginate-events').append(paginateLinkArr[i]);
 									}
+									
+									// RE-REGISTER ACTIVE-LINK-HANDLER
+									activeLinkColored(paginateCounter)
 
 									// RE-REGISTER PAGINATE-LINK CLICK-HANDLER
 									paginateLinkHandler()
@@ -524,6 +578,384 @@ function paginateEventResults(responseJson){
 				})				
 }
 
+// PAGINATE-ZOMATO-RESULTS
+function paginateZomatoResults(foodanddrink){
+	let totalResults = foodanddrink.results_found
+	let resultsPerPage = foodanddrink.results_shown
+
+	let totalLinks = Math.ceil(totalResults/resultsPerPage)
+
+	let paginateLinkArr = []
+	let paginateCounter = 1
+
+	// PUSH LINK TAGS CORRESPONDING TO TOTAL NUMBER OF RESULT-LINKS INTO paginateLinkArr ARRAY
+	for (let i = 1; i <= totalLinks; i++){
+		 paginateLinkArr.push(`<a href="#" class="paginate">${i}</a>`)	
+	}
+
+	// LOOP THRU paginateLinkArr ARRAY TO APPEND 10-PAGINATE-LINKS at a time
+	for (let i = 0; i < 10; i++){
+		$('.paginate-events').append(paginateLinkArr[i])
+	}
+
+	// SET LINK-1 TO ACTIVE
+	let activeLink = $('.paginate')
+	$(activeLink[0]).css('color', '#AEFFD8')
+	
+	// CREATE NEXT-LINK AND APPEND TO EXISTING PAGINATE-LINKS DIV
+	let next = `<a href="#" class="next">>></a>`
+	$('.paginate-next').append(next)				
+
+	// CREATE NEXT-LINK AND APPEND TO EXISTING PAGINATE-LINKS DIV
+	let prev = `<a href="#" class="prev"><<</a>`
+	$('.paginate-prev').append(prev)
+
+	// FUNCTION: DISABLE PREV/NEXT BTNS
+	function disablePrevNextBtns(paginateCounter){
+		paginateCounter === 1 ? $('.prev').hide(): $('.prev').show()
+		paginateCounter === totalLinks ? $('.next').hide(): $('.next').show()
+	}
+
+	// DISABLE PREV/NEXT BTNS 
+	disablePrevNextBtns(paginateCounter)
+
+	// PREV CLICK-HANDLER
+	$('.prev').on('click', (e)=>{	
+		e.preventDefault()
+		console.log(paginateCounter, totalLinks)
+		// DECREMENT PAGINATE-COUNTER BY 1 AND DISABLE PREV/NEXT BTNS IF NECESSARY
+		paginateCounter = Number(paginateCounter - 1)
+		disablePrevNextBtns(paginateCounter)
+
+		console.log(paginateCounter)
+
+		const headers = {
+				"headers": {
+				"user-key": "9fc6bb49836d20f169da8151581bde82"
+			}
+		}
+
+		let zomatoSearchQuery = $('.yelp-queryString').val()
+
+	// MAKE GET-REQUEST TO PREVIOUS PAGE
+		let zomatoRadius = $('.zomato-range').val() * 1609.34
+
+		zomatoApiURL = `https://developers.zomato.com/api/v2.1/search?q=${zomatoSearchQuery}&lat=${selectedEventObj.eventCoors.lat}&lon=${selectedEventObj.eventCoors.long}&radius=${zomatoRadius}&start=${paginateCounter}&count=10&sort=real_distance&order=asc`
+
+		fetch(zomatoApiURL, headers).then(response=>{
+				if (response.status === 200){
+						return response.json()	
+					} else {
+						hideLoader()
+						throw new Error(response.statusText)
+					}
+				}).then(responseJson =>{
+					// EMPTY PREVIOUS RESULTS AND HANDLE NEW RESULTS
+					$('.results').empty();
+			
+					activeLinkColored(paginateCounter)
+
+					handleZomatoResults(responseJson)
+
+				// IF USER IS ON LAST SET OF 10 PAGINATE-LINKS ON PAGE AND CLICKS "PREV" EMPTY CURRENT SET OF PAGINATE-LINKS 
+					if (paginateCounter % 10 === 0){
+						$('.paginate-events').empty();
+
+						// AND APPEND NEXT 10 LINKS
+						for (let i = paginateCounter-10; i < paginateCounter; i++){
+							$('.paginate-events').append(paginateLinkArr[i]);
+						}
+						
+						activeLinkColored(paginateCounter)
+
+						// RE-REGISTER CLICK-HANDLER FOR PAGINATE-LINKS
+						paginateLinkHandler();
+					}
+				})
+})
+
+	// PAGINATE-LINK-HANDLER FUNCTION 
+	function paginateLinkHandler(){
+		$('.paginate').on('click', (e)=>{
+			e.preventDefault()
+			console.log(e.target.textContent)
+
+			// SET PAGINATE-COUNTER TO LINK'S TEXT-CONTENT 
+			paginateCounter = Number(e.target.textContent)
+
+			console.log(paginateCounter)
+			disablePrevNextBtns(paginateCounter)
+
+			let zomatoSearchQuery = $('.yelp-queryString').val()
+
+			let zomatoRadius = $('.zomato-range').val() * 1609.34
+
+			const headers = {
+					"headers": {
+					"user-key": "9fc6bb49836d20f169da8151581bde82"
+				}
+			}
+
+			// MAKE GET-REQUEST TO CORRESPONDING NUMBER OF LINK
+			let zomatoApiURL = `https://developers.zomato.com/api/v2.1/search?q=${zomatoSearchQuery}&lat=${selectedEventObj.eventCoors.lat}&lon=${selectedEventObj.eventCoors.long}&radius=${zomatoRadius}&start=${paginateCounter}&count=10&sort=real_distance&order=asc`
+
+			fetch(zomatoApiURL, headers).then(response=>{
+					if (response.status === 200){
+							return response.json()	
+						} else {
+							hideLoader()
+							throw new Error(response.statusText)
+						}
+					}).then(responseJson =>{
+						console.log('seatGeekPaginate', responseJson)
+						// EMPTY PREVIOUS RESULTS
+						$('.results').empty();
+				
+						// ACTIVE LINK
+						$(e.currentTarget).css('color', '#AEFFD8')
+				
+						// EXTRACT AND APPEND ALL RELEVANT INFO INTO RESULT-CARDS
+						handleZomatoResults(responseJson)
+			})
+		})
+}
+
+	// REGISTER PAGINATE-LINK CLICK-HANDLER
+	paginateLinkHandler()
+
+	// NEXT-LINK CLICK-HANDLER: FETCH NEXT PAGE, AND HANDLE RESULTS
+	$('.next').on('click', (e)=>{
+		e.preventDefault()
+
+		console.log(paginateCounter, totalLinks)
+
+		// INCREMENT PAGINATE-COUNTER
+		paginateCounter = Number(paginateCounter + 1)
+
+		disablePrevNextBtns(paginateCounter)
+
+		console.log(paginateCounter)
+
+		let zomatoSearchQuery = $('.yelp-queryString').val()
+
+		let zomatoRadius = $('.zomato-range').val() * 1609.34
+
+		const headers = {
+				"headers": {
+				"user-key": "9fc6bb49836d20f169da8151581bde82"
+			}
+		}
+		// MAKE GET-REQUEST TO NEXT PAGE 
+		let zomatoApiURL = `https://developers.zomato.com/api/v2.1/search?q=${zomatoSearchQuery}&lat=${selectedEventObj.eventCoors.lat}&lon=${selectedEventObj.eventCoors.long}&radius=${zomatoRadius}&start=${paginateCounter}&count=10&sort=real_distance&order=asc`
+
+		fetch(zomatoApiURL, headers).then(response=>{
+				if (response.status === 200){
+						return response.json()	
+					} else {
+						hideLoader()
+						throw new Error(response.statusText)
+					}
+				}).then(responseJson =>{
+					// EMPTY PREVIOUS RESULTS AND APPEND NEW PAGE
+					$('.results').empty();
+			
+					// ACTIVE LINK
+					$('.paginate').css('color', 'white')
+
+					let activeLink = $('.paginate')
+
+					console.log($('.paginate'))
+
+					for (let i = 0 ; i < activeLink.length; i++){
+						if (activeLink[i].textContent === paginateCounter){
+							$(activeLink[i]).css('color', '#AEFFD8')
+						}
+					}
+
+					handleZomatoResults(responseJson)
+
+													// IF PREVIOUS-PAGE WAS THE LAST OF 10-PAGINATE-LINKS PER PAGE 
+				if ((paginateCounter-1) % 10 === 0){
+						// EMPTY CURRENT SET OF PAGINATE-LINKS
+						$('.paginate-events').empty();
+
+						// APPEND NEXT 10 LINKS
+						for (let i = paginateCounter-1; i < (paginateCounter-1)+10; i++){
+								$('.paginate-events').append(paginateLinkArr[i]);
+						}
+
+						// RE-REGISTER PAGINATE-LINK CLICK-HANDLER
+						paginateLinkHandler()
+					}
+				})
+})		
+}
+
+// HANDLE-ZOMATO-RESULTS
+function handleZomatoResults(foodanddrink){
+	let foodAndDrinkArr = foodanddrink.restaurants
+
+	// NO-RESULTS HANDLER
+	if (foodAndDrinkArr.length === 0){
+		let resultDiv = `
+				<div class="eventResults noResults">
+					No <span class="noResultsQuery">${zomatoSearchQuery} </span> restaurants in <span class="noResultsLocation">${selectedEventObj.eventLocation}</span>
+				</div>`
+
+
+				$('.no-results').append(resultDiv)
+
+	} else {
+		// EXTRACT ALL RELEVANT INFO FROM ZOMATO-API CALL
+		for (let i = 0 ; i < foodAndDrinkArr.length; i++){
+			let zomatoName = foodAndDrinkArr[i].restaurant.name
+			let zomatoCuisines = foodAndDrinkArr[i].restaurant.cuisines
+
+
+			let zomatoMenuURL = foodAndDrinkArr[i].restaurant.menu_url
+			let zomatoDetailsURL = foodAndDrinkArr[i].restaurant.url
+			let zomatoPrice = foodAndDrinkArr[i].restaurant.average_cost_for_two
+			let zomatoRatings = foodAndDrinkArr[i].restaurant.user_rating.aggregate_rating
+			let zomatoRatingsText = foodAndDrinkArr[i].restaurant.user_rating.rating_text
+			let zomatoID = foodAndDrinkArr[i].restaurant.R.res_id
+			let zomatoIMG = foodAndDrinkArr[i].restaurant.thumb
+
+
+			let zomatoLat = foodAndDrinkArr[i].restaurant.location.latitude
+			let zomatoLong = foodAndDrinkArr[i].restaurant.location.longitude
+
+			const googleApiURL = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${zomatoLat},${zomatoLong}&key=${selectedEventObj.googleApiKey}`
+
+			// USE EXTRACTED LAT/LONG TO MAKE A CALL TO GOOGLE-API TO GET FORMATTED ADDRESS
+			fetch(googleApiURL).then(response => {
+				if (response.status === 200){
+					return response.json()	
+				} else {
+					throw new Error(response.statusText)
+				}
+
+			}).then(responseJson =>{
+
+
+			let zomatoAddress = responseJson.results[0].formatted_address
+
+			let zomatoAddressSplit = zomatoAddress.split(',')
+			let zomatoStreet = zomatoAddressSplit[0]
+			let zomatoCity = zomatoAddressSplit[1].substring(1)
+			let zomatoStateZip = zomatoAddressSplit[2].substring(1)
+
+			let addressArr = zomatoAddress.split(' ')
+			let zomatoAddressURI = addressArr.join('+')
+			let eventAddressURI = selectedEventObj.eventAddress.split(' ').join('+')
+			let googleMapsLinkURL = `https://www.google.com/maps/dir/?api=1&origin=${eventAddressURI}&destination=${zomatoAddressURI}`	
+
+			let zomatoResIdURL = `https://developers.zomato.com/api/v2.1/restaurant?res_id=${zomatoID}`
+			
+			const headers = {
+				"headers": {
+				"user-key": "9fc6bb49836d20f169da8151581bde82"
+		  	}
+		}
+			
+			fetch(zomatoResIdURL, headers).then(response=>{
+				displayLoader()
+				if (response.status === 200){
+						return response.json()	
+					} else {
+						throw new Error(response.statusText)
+						hideLoader()
+					}
+				}).then(resID =>{
+					console.log('RESid: ', resID)
+					hideLoader()
+				
+				let zomatoHighlightsArr = resID.highlights
+				
+				let zomatoIMG2 = resID.featured_image
+				
+				
+				let zomatoPhoneNumber = resID.phone_numbers
+
+				if (zomatoPhoneNumber.includes(',')){
+					zomatoPhoneNumber = zomatoPhoneNumber.split(',')[0]
+				}
+
+
+			let resultDiv = `
+				<div class="zomatoResults" id=${zomatoID}>
+					<header>${zomatoName}</header>
+					<button class="event-select"> SELECT </button>
+
+					<span class="eventDateTime">
+						<i class="fas fa-utensils"></i>				
+						<i>${zomatoCuisines}</i>
+					</span>
+
+					 <span class="zomato-ratings">
+						Ratings: <strong>${zomatoRatings}/5</strong>
+					</span>
+
+
+				<div class="responsive-div">
+					<div class="responsive-left">
+						<div class="zomato-img-wrapper">
+							<img src="${zomatoIMG}" class="zomato-img">
+						</div>
+					</div>
+					<div class="responsive-right">
+						<div class="event-venue-address">
+							<span class="eventAddress">
+								<span class="zomatoStreet">${zomatoStreet}</span>
+								<span class="zomatoCityStateZip">${zomatoCity}, ${zomatoStateZip}</span>
+							</span>
+							<span class="eventDirections">
+								<i class="fas fa-directions"></i> 
+									<a href="${googleMapsLinkURL}" target="_blank" class="google-address">Get Directions</a>
+							</span>		
+
+							<span class="zomato-phoneNumber">
+								<i class="fas fa-phone"></i>
+									<a href="tel:${zomatoPhoneNumber}" class="zomato-phone-link">${zomatoPhoneNumber}</a>
+							</span>
+
+						</div>
+						 <span class="zomato-price">
+							<i class="fas fa-money-bill"></i>
+							<strong>~$${zomatoPrice}</strong>
+						</span>
+
+						<div class="result-btns-wrapper">
+							<a href="${zomatoMenuURL}" target="_blank"><button class="eventURL">MENU</button></a>
+
+							<a href="${zomatoDetailsURL}" target="_blank"><button class="eventURL">DETAILS</button></a>
+						</div>
+					</div>
+				</div>
+
+				</div>`
+
+				// APPEND RESULT-DIVS 
+			   $('.results').append(resultDiv)
+
+				// LOOP THRU RESULTS AND IF IMAGE IS NOT AVAILABLE, REPLACE IMG WITH "IMAGE NOT AVAILABLE"
+				let imgArr = $('.zomato-img')
+
+				for (let i = 0 ; i < imgArr.length; i++){
+					if(!imgArr[i].src.includes('zmtcdn') && zomatoIMG2 === ''){
+						imgArr[i].parentNode.append('image not available')
+						imgArr[i].remove()
+					} else if (!imgArr[i].src.includes('zmtcdn') && zomatoIMG2 !== '') {
+						imgArr[i].parentNode.append(zomatoIMG2)
+						imgArr[i].remove()
+					}
+				}
+			})
+
+			})
+		}
+	}
+}
+		
 // NAV-BAR-HANDLERS
 function navBarHandlers(){
 	// NAVBAR: HOME-LOGO
@@ -758,6 +1190,7 @@ function clickAndSubmitHandlers(){
 					// MOVE USER TO NEXT-PAGE (RESTAURANT-SELECT/SEARCH PAGE) AND SET LOCATION INPUT TO SELECTED-EVENT'S LOCATION
 					appendPage(foodAndDrinksPageGenerator());		
 					$('.yelp-locations').val(selectedEventObj.eventLocation)	
+					$('.zomato-range').val(selectedEventObj.eventSearchRange)	
 				})
 		})
 	})
@@ -769,13 +1202,18 @@ function clickAndSubmitHandlers(){
 
 		$('.results').empty();
 		$('.no-results').empty();
+		
+		// CLEAR PAGINATION LINKS
+		$('.paginate-events').empty()
+		$('.paginate-prev').empty()
+		$('.paginate-next').empty()
 
 		let zomatoSearchQuery = $('.yelp-queryString').val()
 		let zomatoLocation = $('.yelp-locations').val()
 
 		const zomatoApiKey = '9fc6bb49836d20f169da8151581bde82'
 
-		let zomatoRadius = 1609.34
+		let zomatoRadius = $('.zomato-range').val() * 1609.34
 		let zomatoApiURL
 
 		const headers = {
@@ -787,12 +1225,13 @@ function clickAndSubmitHandlers(){
 	// IF RESTAURANT-LOCATION IS DIFFERENT FROM SELECTED-EVENT-LOCATION, FIND COORDINATES OF NEW LOCATION VIA GOOGLE API
 		if (zomatoLocation !== selectedEventObj.eventLocation){
 
-			zomatoCity = zomatoLocation.split(',')[0].split(' ').join(
+			let zomatoCity = zomatoLocation.split(',')[0].split(' ').join(
 			'+')
-			zomatoState= zomatoLocation.split(',')[1].split(' ').join(
+			
+			let zomatoState = zomatoLocation.split(',')[1].split(' ').join(
 			'+')
 
-			let googleGetCoorsURL = `https://maps.googleapis.com/maps/api/geocode/json?address=${zomatoCity}${zomatoState}&key=${selectedEventObj.googleApiKey}`
+			let googleGetCoorsURL = `https://maps.googleapis.com/maps/api/geocode/json?address=${zomatoCity}${zomatoState}&key=${selectedEventObj.googleApiKey}&sort=real_distance&order=asc`
 
 			fetch(googleGetCoorsURL).then(response=>{
 				if (response.status === 200){
@@ -805,138 +1244,32 @@ function clickAndSubmitHandlers(){
 					console.log(coors)
 					let newLocationLat = coors.results[0].geometry.location.lat
 					let newLocationLng = coors.results[0].geometry.location.lng
-
+					
 					// USE COORDINATES FOR NEW LOCATION TO MAKE FETCH CALL TO ZOMATO API
-					 zomatoApiURL = `https://developers.zomato.com/api/v2.1/search?q=${zomatoSearchQuery}&lat=${newLocationLat}&lon=${newLocationLng}&radius=${zomatoRadius}`
+					 zomatoApiURL = `https://developers.zomato.com/api/v2.1/search?q=${zomatoSearchQuery}&lat=${newLocationLat}&lon=${newLocationLng}&radius=${zomatoRadius}&start=0&count=10`
 
 					 fetch(zomatoApiURL, headers).then(response=>{
-						displayLoader()
 						if (response.status === 200){
 								return response.json()	
 							} else {
-								throw new Error(response.statusText)
 								hideLoader()
+								throw new Error(response.statusText)
 							}
 						}).then(foodanddrink =>{
-
-							hideLoader();
-
-							let foodAndDrinkArr = foodanddrink.restaurants
-
-							// NO-RESULTS HANDLER
-							if (foodAndDrinkArr.length === 0){
-								let resultDiv = `
-										<div class="eventResults noResults">
-											No <span class="noResultsQuery">${zomatoSearchQuery} </span> restaurants in <span class="noResultsLocation">${selectedEventObj.eventLocation}</span>
-										</div>`
-
-
-										$('.no-results').append(resultDiv)
-
-							} else {
-								// EXTRACT ALL RELEVANT INFO FROM ZOMATO-API CALL
-								for (let i = 0 ; i < foodAndDrinkArr.length; i++){
-									let zomatoName = foodAndDrinkArr[i].restaurant.name
-									let zomatoCuisines = foodAndDrinkArr[i].restaurant.cuisines
-
-
-									let zomatoMenuURL = foodAndDrinkArr[i].restaurant.menu_url
-									let zomatoDetailsURL = foodAndDrinkArr[i].restaurant.url
-									let zomatoPrice = foodAndDrinkArr[i].restaurant.average_cost_for_two
-									let zomatoRatings = foodAndDrinkArr[i].restaurant.user_rating.aggregate_rating
-									let zomatoRatingsText = foodAndDrinkArr[i].restaurant.user_rating.rating_text
-									let zomatoID = foodAndDrinkArr[i].restaurant.R.res_id
-									let zomatoIMG = foodAndDrinkArr[i].restaurant.thumb
-
-
-									let zomatoLat = foodAndDrinkArr[i].restaurant.location.latitude
-									let zomatoLong = foodAndDrinkArr[i].restaurant.location.longitude
-
-									const googleApiURL = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${zomatoLat},${zomatoLong}&key=${selectedEventObj.googleApiKey}`
-
-									// USE EXTRACTED LAT/LONG TO MAKE A CALL TO GOOGLE-API TO GET FORMATTED ADDRESS
-									fetch(googleApiURL).then(response => {
-										if (response.status === 200){
-											return response.json()	
-										} else {
-											throw new Error(response.statusText)
-										}
-
-									}).then(responseJson =>{
-
-
-									let zomatoAddress = responseJson.results[0].formatted_address
-
-									let zomatoAddressSplit = zomatoAddress.split(',')
-									let zomatoStreet = zomatoAddressSplit[0]
-									let zomatoCity = zomatoAddressSplit[1].substring(1)
-									let zomatoStateZip = zomatoAddressSplit[2].substring(1)
-
-									let addressArr = zomatoAddress.split(' ')
-									let zomatoAddressURI = addressArr.join('+')
-									let eventAddressURI = selectedEventObj.eventAddress.split(' ').join('+')
-									let googleMapsLinkURL = `https://www.google.com/maps/dir/?api=1&origin=${eventAddressURI}&destination=${zomatoAddressURI}`	
-
-									let resultDiv = `
-										<div class="zomatoResults" id=${zomatoID}>
-											<header>${zomatoName}</header>
-											<button class="event-select"> SELECT </button>
-
-											<span class="eventDateTime">
-												<i class="fas fa-utensils"></i>				
-												<i>${zomatoCuisines}</i>
-											</span>
-
-											 <span class="zomato-ratings">
-												Ratings: <strong>${zomatoRatings}/5</strong>
-											</span>
-
-											<div class="zomato-img-wrapper">
-												<img src="${zomatoIMG}" class="zomato-img">
-											</div>
-
-											<div class="event-venue-address">
-												<span class="eventAddress">
-													<span class="zomatoStreet">${zomatoStreet}</span>
-													<span class="zomatoCityStateZip">${zomatoCity}, ${zomatoStateZip}</span>
-												</span>
-												<span class="eventDirections">
-													<i class="fas fa-directions"></i> 
-														<a href="${googleMapsLinkURL}" target="_blank" class="google-address">Get Directions</a>
-												</span>
-
-											</div>
-											 <span class="zomato-price">
-												Dinner for 2: <strong>~$${zomatoPrice}</strong></span>
-
-											<div class="result-btns-wrapper">
-												<a href="${zomatoMenuURL}" target="_blank"><button class="eventURL">MENU</button></a>
-												<a href="${zomatoDetailsURL}" target="_blank"><button class="eventURL">DETAILS</button></a>
-											</div>
-										</div>`
-
-										// APPEND RESULT-DIVS 
-									   $('.results').append(resultDiv)
-
-										// LOOP THRU RESULTS AND IF IMAGE IS NOT AVAILABLE, REPLACE IMG WITH "IMAGE NOT AVAILABLE"
-										let imgArr = $('.zomato-img')
-
-										for (let i = 0 ; i < imgArr.length; i++){
-											if(!imgArr[i].src.includes('zmtcdn')){
-												imgArr[i].parentNode.append('image not available')
-												imgArr[i].remove()
-											}
-										}
-									}) 
-								}
-							}
-						})
-			})
+						 	hideLoader();
+						 
+						 	handleZomatoResults(foodanddrink)	
+						 
+						 	paginateZomatoResults(foodanddrink)
+					 }) 
+			})					
 
 		}  else {
 			// IF RESTAURANT-LOCATION IS THE SAME AS EVENT THEN SKIP FETCH CALL FOR COORDINATES TO GOOGLEAPI AND USE STORED COORS IN SELECTED-EVENT-OBJ TO MAKE CALL TO ZOMATO-API
-
-			zomatoApiURL = `https://developers.zomato.com/api/v2.1/search?q=${zomatoSearchQuery}&lat=${selectedEventObj.eventCoors.lat}&lon=${selectedEventObj.eventCoors.long}&radius=${zomatoRadius}`
+			let zomatoStart = 0
+			let zomatoCount = 10
+				
+			zomatoApiURL = `https://developers.zomato.com/api/v2.1/search?q=${zomatoSearchQuery}&lat=${selectedEventObj.eventCoors.lat}&lon=${selectedEventObj.eventCoors.long}&radius=${zomatoRadius}&start=${zomatoStart}&count=${zomatoCount}&sort=real_distance&order=asc`
 
 
 			fetch(zomatoApiURL, headers).then(response=>{
@@ -944,125 +1277,21 @@ function clickAndSubmitHandlers(){
 						if (response.status === 200){
 								return response.json()	
 							} else {
-								throw new Error(response.statusText)
 								hideLoader()
+								throw new Error(response.statusText)
+							
 							}
 						}).then(foodanddrink =>{
-
+							console.log(foodanddrink)
 							hideLoader();
 
-							let foodAndDrinkArr = foodanddrink.restaurants
+							handleZomatoResults(foodanddrink)		
+				
+							paginateZomatoResults(foodanddrink)
 
-							// NO-RESULTS HANDLER
-							if (foodAndDrinkArr.length === 0){
-								let resultDiv = `
-										<div class="eventResults noResults">
-											No <span class="noResultsQuery">${zomatoSearchQuery} </span> restaurants in <span class="noResultsLocation">${selectedEventObj.eventLocation}</span>
-										</div>`
-
-
-										$('.no-results').append(resultDiv)
-
-							} else {
-								// EXTRACT ALL RELEVANT INFO FROM ZOMATO-API CALL
-								for (let i = 0 ; i < foodAndDrinkArr.length; i++){
-									let zomatoName = foodAndDrinkArr[i].restaurant.name
-									let zomatoCuisines = foodAndDrinkArr[i].restaurant.cuisines
-
-
-									let zomatoMenuURL = foodAndDrinkArr[i].restaurant.menu_url
-									let zomatoDetailsURL = foodAndDrinkArr[i].restaurant.url
-									let zomatoPrice = foodAndDrinkArr[i].restaurant.average_cost_for_two
-									let zomatoRatings = foodAndDrinkArr[i].restaurant.user_rating.aggregate_rating
-									let zomatoRatingsText = foodAndDrinkArr[i].restaurant.user_rating.rating_text
-									let zomatoID = foodAndDrinkArr[i].restaurant.R.res_id
-									let zomatoIMG = foodAndDrinkArr[i].restaurant.thumb
-
-
-									let zomatoLat = foodAndDrinkArr[i].restaurant.location.latitude
-									let zomatoLong = foodAndDrinkArr[i].restaurant.location.longitude
-
-									const googleApiURL = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${zomatoLat},${zomatoLong}&key=${selectedEventObj.googleApiKey}`
-
-									// USE EXTRACTED LAT/LONG TO MAKE A CALL TO GOOGLE-API TO GET FORMATTED ADDRESS
-									fetch(googleApiURL).then(response => {
-										if (response.status === 200){
-											return response.json()	
-										} else {
-											throw new Error(response.statusText)
-										}
-
-									}).then(responseJson =>{
-
-
-									let zomatoAddress = responseJson.results[0].formatted_address
-
-									let zomatoAddressSplit = zomatoAddress.split(',')
-									let zomatoStreet = zomatoAddressSplit[0]
-									let zomatoCity = zomatoAddressSplit[1].substring(1)
-									let zomatoStateZip = zomatoAddressSplit[2].substring(1)
-
-									let addressArr = zomatoAddress.split(' ')
-									let zomatoAddressURI = addressArr.join('+')
-									let eventAddressURI = selectedEventObj.eventAddress.split(' ').join('+')
-									let googleMapsLinkURL = `https://www.google.com/maps/dir/?api=1&origin=${eventAddressURI}&destination=${zomatoAddressURI}`	
-
-									let resultDiv = `
-										<div class="zomatoResults" id=${zomatoID}>
-											<header>${zomatoName}</header>
-											<button class="event-select"> SELECT </button>
-
-											<span class="eventDateTime">
-												<i class="fas fa-utensils"></i>				
-												<i>${zomatoCuisines}</i>
-											</span>
-
-											 <span class="zomato-ratings">
-												Ratings: <strong>${zomatoRatings}/5</strong>
-											</span>
-
-											<div class="zomato-img-wrapper">
-												<img src="${zomatoIMG}" class="zomato-img">
-											</div>
-
-											<div class="event-venue-address">
-												<span class="eventAddress">
-													<span class="zomatoStreet">${zomatoStreet}</span>
-													<span class="zomatoCityStateZip">${zomatoCity}, ${zomatoStateZip}</span>
-												</span>
-												<span class="eventDirections">
-													<i class="fas fa-directions"></i> 
-														<a href="${googleMapsLinkURL}" target="_blank" class="google-address">Get Directions</a>
-												</span>
-
-											</div>
-											 <span class="zomato-price">
-												Dinner for 2: <strong>~$${zomatoPrice}</strong></span>
-
-											<div class="result-btns-wrapper">
-												<a href="${zomatoMenuURL}" target="_blank"><button class="eventURL">MENU</button></a>
-												<a href="${zomatoDetailsURL}" target="_blank"><button class="eventURL">DETAILS</button></a>
-											</div>
-										</div>`
-
-										// APPEND RESULT-DIVS 
-									   $('.results').append(resultDiv)
-
-										// LOOP THRU RESULTS AND IF IMAGE IS NOT AVAILABLE, REPLACE IMG WITH "IMAGE NOT AVAILABLE"
-										let imgArr = $('.zomato-img')
-
-										for (let i = 0 ; i < imgArr.length; i++){
-											if(!imgArr[i].src.includes('zmtcdn')){
-												imgArr[i].parentNode.append('image not available')
-												imgArr[i].remove()
-											}
-										}
-									}) 
-								}
-							}
-						})
-		}
-	})
+					})
+			}
+})
 
 	// RESTAURANT-SELECT
 	$('main').on('click', '.zomatoResults > .event-select', (e)=>{
@@ -1096,8 +1325,7 @@ function clickAndSubmitHandlers(){
 			}
 
 			let zomatoApiURLByID = `https://developers.zomato.com/api/v2.1/restaurant?res_id=${selectedEventID}`
-
-
+			
 			fetch(zomatoApiURLByID, headers).then(response=>{
 				if (response.status === 200){
 						return response.json()	
@@ -1106,17 +1334,16 @@ function clickAndSubmitHandlers(){
 						hideLoader()
 					}
 				}).then(resDetails =>{
-
-
+				
 					console.log('ZomatoAPI lookup by ID:', resDetails)
 
 					let zomatoLong = resDetails.location.longitude
 					let zomatoLat = resDetails.location.latitude
+					
 					selectedEventObj.restaurantIMG = resDetails.thumb
 
 					// USE LAT/LONG COORS TO MAKE CALL TO GOOGLEAPI TO EXTRACT FORMATTED ADDRESS
 					const googleApiURL = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${zomatoLat},${zomatoLong}&key=${selectedEventObj.googleApiKey}`
-
 
 					fetch(googleApiURL).then(response => {
 						if (response.status === 200){
