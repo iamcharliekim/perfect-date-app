@@ -417,6 +417,8 @@ input.location {
 
 span.zomato-ratings {
 	font-weight: bold;
+	padding: 5px 0;
+	font-size: 18px
 	
 }
 
@@ -442,8 +444,6 @@ span.zomato-price {
 	color: #CEE5F2;
 	width: 100%;
 }
-
-
 
 .event-img, .zomato-img {
 	width: 100%;
@@ -684,26 +684,6 @@ span.noResultsLocation, span.noResultsQuery {
 	color: #AEFFD8;
 	text-decoration: none
 }
-
-.highlightsDiv {
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-	align-items: flex-start;
-}
-
-.showHighLightsBtn {
-	color: white;
-	width: 98%;
-	margin: 15px 5px;
-	margin-top: 0px;
-	margin-left: 0;
-	padding: 5px;
-
-	font-size: 20px;	
-
-}
-
 
 .results {
 	width: 98%;
@@ -1016,12 +996,17 @@ span.event-name, span.restaurant-name {
 	
 }
 
-.date-details-clicked {
+.responsive-right {
+	display: flex;
+	flex-direction: column;
+	align-content: flex-start
+	
 }
 
-.date-details-clicked .fa-angle-double-up {
-    
+.responsive-right .zomato-phoneNumber {
+	margin-bottom: 0
 }
+
 
 .spinner-bg {
 	background:  linear-gradient(

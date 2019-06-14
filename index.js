@@ -28,11 +28,15 @@ const selectedEventObjReset = {
 				restaurantName: '',
 				restaurantAddress: '',
                 restaurantLocation: '',
+				restaurantPhone: '',
+				restaurantRatings: '',
 				restaurantCost: '',
 				restaurantCoors: {
 					lat: '',
 					long: ''
 				},
+				restaurantIMG: '',
+				restaurantIMG2: '',
 				restaurantMenu: '',
 				restaurantDetails: '',
 				restaurantFoodType: '',
@@ -676,6 +680,7 @@ function paginateZomatoResults(foodanddrink){
 
 	// PAGINATE-LINK-HANDLER FUNCTION 
 	function paginateLinkHandler(){
+		
 		$('.paginate').on('click', (e)=>{
 			e.preventDefault()
 			console.log(e.target.textContent)
@@ -711,8 +716,9 @@ function paginateZomatoResults(foodanddrink){
 						// EMPTY PREVIOUS RESULTS
 						$('.results').empty();
 				
-						// ACTIVE LINK
-						$(e.currentTarget).css('color', '#AEFFD8')
+						activeLinkColored(paginateCounter)
+				
+									
 				
 						// EXTRACT AND APPEND ALL RELEVANT INFO INTO RESULT-CARDS
 						handleZomatoResults(responseJson)
@@ -760,17 +766,7 @@ function paginateZomatoResults(foodanddrink){
 					$('.results').empty();
 			
 					// ACTIVE LINK
-					$('.paginate').css('color', 'white')
-
-					let activeLink = $('.paginate')
-
-					console.log($('.paginate'))
-
-					for (let i = 0 ; i < activeLink.length; i++){
-						if (activeLink[i].textContent === paginateCounter){
-							$(activeLink[i]).css('color', '#AEFFD8')
-						}
-					}
+					activeLinkColored(paginateCounter)
 
 					handleZomatoResults(responseJson)
 
@@ -783,7 +779,8 @@ function paginateZomatoResults(foodanddrink){
 						for (let i = paginateCounter-1; i < (paginateCounter-1)+10; i++){
 								$('.paginate-events').append(paginateLinkArr[i]);
 						}
-
+						
+						activeLinkColored(paginateCounter)
 						// RE-REGISTER PAGINATE-LINK CLICK-HANDLER
 						paginateLinkHandler()
 					}
@@ -868,92 +865,96 @@ function handleZomatoResults(foodanddrink){
 				}).then(resID =>{
 					console.log('RESid: ', resID)
 					hideLoader()
-				
-				let zomatoHighlightsArr = resID.highlights
-				
-				let zomatoIMG2 = resID.featured_image
-				
-				
-				let zomatoPhoneNumber = resID.phone_numbers
+								
+					let zomatoIMG2 = resID.featured_image
+					
+					selectedEventObj.restaurantIMG2 = zomatoIMG2
 
-				if (zomatoPhoneNumber.includes(',')){
-					zomatoPhoneNumber = zomatoPhoneNumber.split(',')[0]
-				}
+					let zomatoPhoneNumber = resID.phone_numbers
+					
+					selectedEventObj.restaurantPhone = zomatoPhoneNumber
 
-
-			let resultDiv = `
-				<div class="zomatoResults" id=${zomatoID}>
-					<header>${zomatoName}</header>
-					<button class="event-select"> SELECT </button>
-
-					<span class="eventDateTime">
-						<i class="fas fa-utensils"></i>				
-						<i>${zomatoCuisines}</i>
-					</span>
-
-					 <span class="zomato-ratings">
-						Ratings: <strong>${zomatoRatings}/5</strong>
-					</span>
-
-
-				<div class="responsive-div">
-					<div class="responsive-left">
-						<div class="zomato-img-wrapper">
-							<img src="${zomatoIMG}" class="zomato-img">
-						</div>
-					</div>
-					<div class="responsive-right">
-						<div class="event-venue-address">
-							<span class="eventAddress">
-								<span class="zomatoStreet">${zomatoStreet}</span>
-								<span class="zomatoCityStateZip">${zomatoCity}, ${zomatoStateZip}</span>
-							</span>
-							<span class="eventDirections">
-								<i class="fas fa-directions"></i> 
-									<a href="${googleMapsLinkURL}" target="_blank" class="google-address">Get Directions</a>
-							</span>		
-
-							<span class="zomato-phoneNumber">
-								<i class="fas fa-phone"></i>
-									<a href="tel:${zomatoPhoneNumber}" class="zomato-phone-link">${zomatoPhoneNumber}</a>
-							</span>
-
-						</div>
-						 <span class="zomato-price">
-							<i class="fas fa-money-bill"></i>
-							<strong>~$${zomatoPrice}</strong>
-						</span>
-
-						<div class="result-btns-wrapper">
-							<a href="${zomatoMenuURL}" target="_blank"><button class="eventURL">MENU</button></a>
-
-							<a href="${zomatoDetailsURL}" target="_blank"><button class="eventURL">DETAILS</button></a>
-						</div>
-					</div>
-				</div>
-
-				</div>`
-
-				// APPEND RESULT-DIVS 
-			   $('.results').append(resultDiv)
-
-				// LOOP THRU RESULTS AND IF IMAGE IS NOT AVAILABLE, REPLACE IMG WITH "IMAGE NOT AVAILABLE"
-				let imgArr = $('.zomato-img')
-
-				for (let i = 0 ; i < imgArr.length; i++){
-					if(!imgArr[i].src.includes('zmtcdn') && zomatoIMG2 === ''){
-						imgArr[i].parentNode.append('image not available')
-						imgArr[i].remove()
-					} else if (!imgArr[i].src.includes('zmtcdn') && zomatoIMG2 !== '') {
-						imgArr[i].parentNode.append(zomatoIMG2)
-						imgArr[i].remove()
+					if (zomatoPhoneNumber.includes(',')){
+						zomatoPhoneNumber = zomatoPhoneNumber.split(',')[0]
 					}
-				}
-			})
+				
 
-			})
-		}
-	}
+
+
+					let resultDiv = `
+						<div class="zomatoResults" id=${zomatoID}>
+							<header>${zomatoName}</header>
+							<button class="event-select"> SELECT </button>
+
+							<span class="eventDateTime">
+								<i class="fas fa-utensils"></i>				
+								<i>${zomatoCuisines}</i>
+							</span>
+
+							 <span class="zomato-ratings">
+								Ratings: <strong>${zomatoRatings}/5</strong>
+							</span>
+
+
+						<div class="responsive-div">
+							<div class="responsive-left">
+								<div class="zomato-img-wrapper">
+									<img src="${zomatoIMG}" class="zomato-img">
+								</div>
+							</div>
+							<div class="responsive-right">
+								<div class="event-venue-address">
+									<span class="eventAddress">
+										<span class="zomatoStreet">${zomatoStreet}</span>
+										<span class="zomatoCityStateZip">${zomatoCity}, ${zomatoStateZip}</span>
+									</span>
+									<span class="eventDirections">
+										<i class="fas fa-directions"></i> 
+											<a href="${googleMapsLinkURL}" target="_blank" class="google-address">Get Directions</a>
+									</span>		
+
+									<span class="zomato-phoneNumber">
+										<i class="fas fa-phone"></i>
+											<a href="tel:${zomatoPhoneNumber}" class="zomato-phone-link">${zomatoPhoneNumber}</a>
+									</span>
+
+								</div>
+								 <span class="zomato-price">
+									<i class="fas fa-money-bill"></i>
+									<strong>~$${zomatoPrice}</strong>
+								</span>
+
+								<div class="result-btns-wrapper">
+									<a href="${zomatoMenuURL}" target="_blank"><button class="eventURL">MENU</button></a>
+
+									<a href="${zomatoDetailsURL}" target="_blank"><button class="eventURL">DETAILS</button></a>
+								</div>
+								</div>	
+							</div>
+						</div>
+
+						</div>`
+
+						// APPEND RESULT-DIVS 
+					   $('.results').append(resultDiv)
+				
+						// LOOP THRU RESULTS AND IF IMAGE IS NOT AVAILABLE, REPLACE IMG WITH "IMAGE NOT AVAILABLE"
+						let imgArr = $('.zomato-img')
+
+						for (let i = 0 ; i < imgArr.length; i++){
+							if(!imgArr[i].src.includes('zmtcdn') && zomatoIMG2 === ''){
+								imgArr[i].parentNode.append('image not available')
+								imgArr[i].remove()
+							} else if (!imgArr[i].src.includes('zmtcdn') && zomatoIMG2 !== '') {
+								imgArr[i].parentNode.append(zomatoIMG2)
+								imgArr[i].remove()
+							}
+						}
+					})
+
+					})
+				}
+			}
 }
 		
 // NAV-BAR-HANDLERS
@@ -1017,6 +1018,10 @@ function clickAndSubmitHandlers(){
 			e.preventDefault();
 
 			displayLoader();
+		
+			let locationInput = $('.e-search').val()
+			
+			if (locationInput )
 
 			// CLEAR ANY RESULTS FROM PREVIOUS SEARCH
 			$('.results').empty();
@@ -1030,13 +1035,32 @@ function clickAndSubmitHandlers(){
 			// PARSE DATE TO PROPER FORMAT FOR SEATGEEK API
 			let currentDate = $('#date').val().split('/')
 			let formattedCurrentDate = `${currentDate[2]}-${currentDate[0]}-${currentDate[1]}`
-			console.log(formattedCurrentDate)
 			
 			selectedEventObj.eventSearchDate = formattedCurrentDate
+		
+			// AUTHENTICATE EVENT-SEARCH-FORM
+			let locationRegex = /\D+,\s\D{2}/
+			
+			if ($('.e-search').val().split(',')[0] === undefined || $('.e-search').val().split(',')[1] === undefined || 			locationRegex.test(locationInput) === false || locationRegex.test(locationInput) === false ){
+				alert('Please make sure your location is in the correct format: city, state')	
+				hideLoader()
+				return
+			}
+		
+			let dateRegex = /\d{2}\/\d{2}\/\d{4}/
+
+			if (!dateRegex.test($('#date').val())){
+				alert('Please make sure your date is in the correct format: MM/DD/YYYY')
+				hideLoader()
+				return
+			}
+			
 
 			// PARSE CITY AND STATE FORM USER-INPUT AND STORE IN SELECTEDEVENTOBJ
 			let city = $('.e-search').val().split(',')[0].trim()
 			let state = $('.e-search').val().split(',')[1].trim()
+
+		
 			selectedEventObj.origLocation = `${city}, ${state}`;
 
 			// SET RANGE BASED ON USER-INPUT
@@ -1221,8 +1245,19 @@ function clickAndSubmitHandlers(){
 			"user-key": "9fc6bb49836d20f169da8151581bde82"
 		  }
 		}
+		
+		
+		// AUTHENTICATE ZOMATO-LOCATION-INPUT
+		let locationRegex = /\D+,\s\D{2}/
+		let restaurantLocation = $('#restaurant-location')
 
-	// IF RESTAURANT-LOCATION IS DIFFERENT FROM SELECTED-EVENT-LOCATION, FIND COORDINATES OF NEW LOCATION VIA GOOGLE API
+		if (zomatoLocation.split(',')[0] === undefined || zomatoLocation.split(',')[1] === undefined || 			locationRegex.test(zomatoLocation) === false || locationRegex.test(zomatoLocation) === false ){
+			alert('Please make sure your location is in the correct format: city, state')	
+			hideLoader()
+			return
+		}
+
+		// IF RESTAURANT-LOCATION IS DIFFERENT FROM SELECTED-EVENT-LOCATION, FIND COORDINATES OF NEW LOCATION VIA GOOGLE API
 		if (zomatoLocation !== selectedEventObj.eventLocation){
 
 			let zomatoCity = zomatoLocation.split(',')[0].split(' ').join(
@@ -1256,11 +1291,13 @@ function clickAndSubmitHandlers(){
 								throw new Error(response.statusText)
 							}
 						}).then(foodanddrink =>{
-						 	hideLoader();
 						 
 						 	handleZomatoResults(foodanddrink)	
 						 
 						 	paginateZomatoResults(foodanddrink)
+						 	
+						 	hideLoader();
+
 					 }) 
 			})					
 
@@ -1339,8 +1376,13 @@ function clickAndSubmitHandlers(){
 
 					let zomatoLong = resDetails.location.longitude
 					let zomatoLat = resDetails.location.latitude
+					let zomatoRatings = `${resDetails.user_rating.aggregate_rating}/5`
 					
-					selectedEventObj.restaurantIMG = resDetails.thumb
+					if (resDetails.user_rating.aggregate_rating === 0){
+						zomatRatings = resDetails.user_rating.rating_text
+					}
+					console.log(zomatoRatings)
+
 
 					// USE LAT/LONG COORS TO MAKE CALL TO GOOGLEAPI TO EXTRACT FORMATTED ADDRESS
 					const googleApiURL = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${zomatoLat},${zomatoLong}&key=${selectedEventObj.googleApiKey}`
@@ -1362,7 +1404,8 @@ function clickAndSubmitHandlers(){
 
 						let eventGoogleMapsLinkURL = `https://www.google.com/maps/dir/?api=1&origin=${selectedEventObj.origLocation}&destination=${eventAddressURI}`	
 
-
+						selectedEventObj.restaurantIMG = resDetails.thumb
+						selectedEventObj.restaurantRatings = zomatoRatings
 						selectedEventObj.restaurantName = resDetails.name
 						selectedEventObj.restaurantAddress = zomatoAddress
 						selectedEventObj.restaurantCost = Number(resDetails.average_cost_for_two)
@@ -1474,7 +1517,12 @@ function clickAndSubmitHandlers(){
 
 													<i class="fas fa-utensils"></i>	 
 
-													<i>${selectedEventObj.restaurantFoodType}</i></span>
+													<i>${selectedEventObj.restaurantFoodType}</i>
+												</span>
+
+											<span class="zomato-ratings">
+											Ratings: <strong>${selectedEventObj.restaurantRatings}</strong>
+											</span>
 										<div class="responsive-div">
 											<div class="responsive-left">
 												<div class="zomato-img-wrapper">
@@ -1492,6 +1540,11 @@ function clickAndSubmitHandlers(){
 													<i class="fas fa-directions"></i> 
 
 													<a href="${restaurantGoogleMapsLinkURL}" target="_blank" class="google-address">Get Directions</a>
+												</span>
+
+												<span class="zomato-phoneNumber">
+													<i class="fas fa-phone"></i>
+													<a href="tel:${selectedEventObj.restaurantPhone}" class="zomato-phone-link">${selectedEventObj.restaurantPhone}</a>
 												</span>
 
 
@@ -1518,16 +1571,20 @@ function clickAndSubmitHandlers(){
 								$('.restaurant-unfold').hide()
 								$('.restaurant-name').hide()
 								$('.fa-angle-double-up').hide()
+						
 
 								// CHECK THRU ALL EVENT-IMG AND ZOMATO-IMG AND IF IMAGE IS NOT AVAILABLE, REPLACE IMGS WITH "IMAGE NOT AVAILABLE" TEXT
 								let zomatoIMGArr = $('.zomato-img')
 
 										for (let i = 0 ; i < zomatoIMGArr.length; i++){
-											if(!zomatoIMGArr[i].src.includes('zmtcdn')){
+											if(!zomatoIMGArr[i].src.includes('zmtcdn') && selectedEventObj.restaurantIMG2 === ''){
 												zomatoIMGArr[i].parentNode.append('image not available')
 												zomatoIMGArr[i].remove()
-											}
-										}	
+											} else if (!imgArr[i].src.includes('zmtcdn') && selectedEventObj.restaurantIMG2 !== '') {
+												imgArr[i].parentNode.append(selectedEventObj.restaurantIMG2)
+												imgArr[i].remove()
+										}
+										}
 
 								let eventIMGArr = $('.event-img')
 
