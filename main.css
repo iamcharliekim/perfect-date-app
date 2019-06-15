@@ -275,7 +275,6 @@ header h2 {
 	display: flex;
 	flex-direction: row;
 	justify-content: space-between;
-	
 }
 
 #date, #range {
@@ -409,17 +408,15 @@ input.location {
 }
 
 .paginate-next a{
-		color: white;
+	color: white;
 	font-weight: bold;
-		text-decoration: none;
-
+	text-decoration: none;
 }
 
 span.zomato-ratings {
 	font-weight: bold;
 	padding: 5px 0;
 	font-size: 18px
-	
 }
 
 span.zomato-price {
@@ -455,10 +452,6 @@ span.zomato-price {
 	padding: 0
 }
 
-.date-details .event-img, .date-details .zomato-img {
-
-}
-
 .eventResults header, .zomatoResults header {
 	font-size: 24px;
 	width: 70%;
@@ -482,7 +475,6 @@ span.zomato-price {
     ), url(images/bgimage.jpg);
 	color: white;
 	font-size: 18px;
-	
 }
 
 .fa-calendar {
@@ -646,8 +638,6 @@ div.noResults {
     margin: 0;
 	border: none;
     font-size: 30px;
-
-    
 }
 
 span.noResultsLocation, span.noResultsQuery {
@@ -656,8 +646,6 @@ span.noResultsLocation, span.noResultsQuery {
     background-color: black;
     font-size: 30px;
     padding: 10px;
-    
-
 }
 
 .google-address {
@@ -690,6 +678,11 @@ span.noResultsLocation, span.noResultsQuery {
 	max-width: 540px;
     padding: 0 5px
 }
+
+.results .event-price {
+	margin-top: 0
+}
+
 
 .itin-msg {
 	width: 100%;
@@ -730,9 +723,6 @@ span.noResultsLocation, span.noResultsQuery {
     width: 100%;
     height: 100%;
 }
-.weather-cost-wrapper {
-
-}
 
 .event-restaurant-details-wrapper {
 	display: flex;
@@ -741,8 +731,6 @@ span.noResultsLocation, span.noResultsQuery {
 	justify-content: center;
 	width: 100%;
 }
-
-
 
 .cost, .event-details, .restaurant-details {
 	display: flex;
@@ -916,9 +904,6 @@ span.restaurant-foodType {
 	padding-bottom: 5px
 }
 
-
-
-
 .cost-unfold, .event-unfold, .restaurant-unfold {
 	display: flex;
 	flex-direction: column;
@@ -927,7 +912,6 @@ span.restaurant-foodType {
 		border-top: 2px solid #AEFFD8;
 	width: 100%;
 	padding: 10px;
-
 }
 
 .cost-unfold span {
@@ -952,7 +936,6 @@ span.restaurant-foodType {
 	justify-content: center;
 	text-align: center;
     padding: 0
-	
 }
 
 .cost-header:hover, .event-header:hover, .restaurant-header:hover {
@@ -995,19 +978,15 @@ span.event-name, span.restaurant-name {
 	color: white;
 	
 }
-
 .responsive-right {
 	display: flex;
 	flex-direction: column;
 	align-content: flex-start
 	
 }
-
 .responsive-right .zomato-phoneNumber {
 	margin-bottom: 0
 }
-
-
 .spinner-bg {
 	background:  linear-gradient(
       rgba(0, 0, 0, 0.6),
@@ -1020,7 +999,6 @@ span.event-name, span.restaurant-name {
 	justify-content: flex-start;
 	align-items: center;
 }
-
 .lds-spinner {
   color: official;
   display: inline-block;
@@ -1028,6 +1006,7 @@ span.event-name, span.restaurant-name {
   width: 64px;
   height: 64px;
 }
+
 .lds-spinner div {
   transform-origin: 32px 32px;
   animation: lds-spinner 1.2s linear infinite;
@@ -1148,7 +1127,6 @@ span.event-name, span.restaurant-name {
 		margin: 0 12px
 	}
 }
-
 
 @media (min-width: 780px){
     .hamburger {

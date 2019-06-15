@@ -799,7 +799,6 @@ function handleZomatoResults(foodanddrink){
 					No <span class="noResultsQuery">${zomatoSearchQuery} </span> restaurants in <span class="noResultsLocation">${selectedEventObj.eventLocation}</span>
 				</div>`
 
-
 				$('.no-results').append(resultDiv)
 
 	} else {
@@ -807,7 +806,6 @@ function handleZomatoResults(foodanddrink){
 		for (let i = 0 ; i < foodAndDrinkArr.length; i++){
 			let zomatoName = foodAndDrinkArr[i].restaurant.name
 			let zomatoCuisines = foodAndDrinkArr[i].restaurant.cuisines
-
 
 			let zomatoMenuURL = foodAndDrinkArr[i].restaurant.menu_url
 			let zomatoDetailsURL = foodAndDrinkArr[i].restaurant.url
@@ -865,7 +863,15 @@ function handleZomatoResults(foodanddrink){
 				}).then(resID =>{
 					console.log('RESid: ', resID)
 					hideLoader()
-								
+							
+					let zomatoRatings = `Ratings: ${resID.user_rating.aggregate_rating}/5`
+					
+					if (resID.user_rating.aggregate_rating === 0){
+						zomatoRatings = resID.user_rating.rating_text
+					}
+				
+					selectedEventObj.restaurantRatings = zomatoRatings
+
 					let zomatoIMG2 = resID.featured_image
 					
 					selectedEventObj.restaurantIMG2 = zomatoIMG2
@@ -877,9 +883,6 @@ function handleZomatoResults(foodanddrink){
 					if (zomatoPhoneNumber.includes(',')){
 						zomatoPhoneNumber = zomatoPhoneNumber.split(',')[0]
 					}
-				
-
-
 
 					let resultDiv = `
 						<div class="zomatoResults" id=${zomatoID}>
@@ -892,7 +895,7 @@ function handleZomatoResults(foodanddrink){
 							</span>
 
 							 <span class="zomato-ratings">
-								Ratings: <strong>${zomatoRatings}/5</strong>
+								<strong>${zomatoRatings}</strong>
 							</span>
 
 
@@ -1376,12 +1379,6 @@ function clickAndSubmitHandlers(){
 
 					let zomatoLong = resDetails.location.longitude
 					let zomatoLat = resDetails.location.latitude
-					let zomatoRatings = `${resDetails.user_rating.aggregate_rating}/5`
-					
-					if (resDetails.user_rating.aggregate_rating === 0){
-						zomatRatings = resDetails.user_rating.rating_text
-					}
-					console.log(zomatoRatings)
 
 
 					// USE LAT/LONG COORS TO MAKE CALL TO GOOGLEAPI TO EXTRACT FORMATTED ADDRESS
@@ -1405,7 +1402,6 @@ function clickAndSubmitHandlers(){
 						let eventGoogleMapsLinkURL = `https://www.google.com/maps/dir/?api=1&origin=${selectedEventObj.origLocation}&destination=${eventAddressURI}`	
 
 						selectedEventObj.restaurantIMG = resDetails.thumb
-						selectedEventObj.restaurantRatings = zomatoRatings
 						selectedEventObj.restaurantName = resDetails.name
 						selectedEventObj.restaurantAddress = zomatoAddress
 						selectedEventObj.restaurantCost = Number(resDetails.average_cost_for_two)
@@ -1521,7 +1517,7 @@ function clickAndSubmitHandlers(){
 												</span>
 
 											<span class="zomato-ratings">
-											Ratings: <strong>${selectedEventObj.restaurantRatings}</strong>
+											<strong>${selectedEventObj.restaurantRatings}</strong>
 											</span>
 										<div class="responsive-div">
 											<div class="responsive-left">
