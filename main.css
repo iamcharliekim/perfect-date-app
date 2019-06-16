@@ -419,6 +419,11 @@ span.zomato-ratings {
 	font-size: 18px
 }
 
+span.zomato-ratings strong {
+	font-size: 16px;
+	color:  #CEE5F2
+}
+
 span.zomato-price {
 	font-weight: bold;
 	padding: 5px 0
@@ -460,7 +465,7 @@ span.zomato-price {
 }
 
 .eventResults .eventDateTime {
-	width: 50%
+	width: 70%
 }
 
 .event-select {
@@ -525,7 +530,7 @@ span.eventDateTime {
 span.eventVenue {
 	font-size: 22px;
 	font-weight: bold;
-	color: white;
+	color:  #CEE5F2;
 	padding-bottom: 5px;
 	
 }
@@ -556,7 +561,7 @@ span.event-price {
 }
 
 span.eventCostVal {
-	
+	color: #E88D67;
 	font-size: 20px;
 	padding: 5px;
 }
@@ -669,8 +674,12 @@ span.noResultsLocation, span.noResultsQuery {
 }
 
 .zomato-phoneNumber a {
-	color: #AEFFD8;
+	color: #BF9ACA;
 	text-decoration: none
+}
+
+.zomato-phoneNumber a:hover {
+	color: #AEFFD8
 }
 
 .results {
@@ -682,7 +691,6 @@ span.noResultsLocation, span.noResultsQuery {
 .results .event-price {
 	margin-top: 0
 }
-
 
 .itin-msg {
 	width: 100%;
@@ -895,8 +903,8 @@ div.restaurant-details {
 
 span.restaurant-foodType {
 	padding: 5px 0 ;
-	padding-bottom: 0;
-    font-size: 18px
+    font-size: 16px;
+	padding-top: 10px
 }
 
 .zomatoResults .eventDateTime {

@@ -85,7 +85,6 @@ function geoLocate(){
 				throw new Error(response.statusText)
 			}
 		}).then(responseJson =>{
-			console.log('geoLocate():', responseJson)
 			let currentLocation = responseJson.meta.geolocation.display_name
 			selectedEventObj.origLocationCoors.lat = responseJson.meta.geolocation.lat
 			selectedEventObj.origLocationCoors.long = responseJson.meta.geolocation.lon
@@ -191,7 +190,9 @@ function entertainmentPageGenerator(){
 			<div class="paginate-events"></div>
 			<div class="paginate-next"></div>
 		</div>
+
 	   <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDOvfuKaaRuYocVQWNl9ICi3wadIephDyc&libraries=places&callback=activateEventLocationSearch"></script>
+
 `
 }
 
@@ -265,12 +266,8 @@ function activeLinkColored(paginateCounter){
 		$('.paginate').css('color', 'white')
 
 		let activeLink = $('.paginate')
-
-		console.log($('.paginate'))
-
+		
 		for (let i = 0 ; i < activeLink.length; i++){
-			console.log(Number(activeLink[i].textContent) === paginateCounter)
-
 			if (Number(activeLink[i].textContent) === paginateCounter){
 				$(activeLink[i]).css('color', '#AEFFD8')
 			}
@@ -313,9 +310,9 @@ function handleEventResults(responseJson){
                 
 				// IF EVENT-PRICE IS $0, THEN EVENT-PRICE IS N/A
 				if (eventPrice === '~$0'){
-					eventPrice = 'N/A'
-				 }
-        		
+					eventPrice = '<i>N/A</i>'
+				}
+				
 				// GET-REQUEST TO GOOGLE-GEOCODE-API TO EXTRACT/FORMAT EVENT ADDRESSES
 				const googleApiURL = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${eventCoors.lat},${eventCoors.lon}&key=${selectedEventObj.googleApiKey}`
 				
@@ -407,9 +404,7 @@ function paginateEventResults(responseJson){
 				
 				let paginateLinkArr = []
 				let paginateCounter = 1
-				
-				console.log('totalLinks:', totalLinks)
-			
+							
 				// PUSH LINK TAGS CORRESPONDING TO TOTAL NUMBER OF RESULT-LINKS INTO paginateLinkArr ARRAY
 				for (let i = 1; i <= totalLinks; i++){
 					 paginateLinkArr.push(`<a href="#" class="paginate">${i}</a>`)	
@@ -423,9 +418,7 @@ function paginateEventResults(responseJson){
 				// SET LINK-1 TO ACTIVE
 				let activeLink = $('.paginate')
 				$(activeLink[0]).css('color', '#AEFFD8')
-	
-				console.log('paginateCounter:', paginateCounter)
-				
+					
 				// CREATE NEXT-LINK AND APPEND TO EXISTING PAGINATE-LINKS DIV
 				let next = `<a href="#" class="next">>></a>`
 				$('.paginate-next').append(next)				
@@ -446,12 +439,9 @@ function paginateEventResults(responseJson){
 				// PREV CLICK-HANDLER
 				$('.prev').on('click', (e)=>{	
 					e.preventDefault()
-					console.log(paginateCounter, totalLinks)
 					// DECREMENT PAGINATE-COUNTER BY 1 AND DISABLE PREV/NEXT BTNS IF NECESSARY
 					paginateCounter = Number(paginateCounter - 1)
 					disablePrevNextBtns()
-
-					console.log(paginateCounter)
 					
 					// MAKE GET-REQUEST TO PREVIOUS PAGE
 					let seatGeekPage = `https://api.seatgeek.com/2/events?client_id=${selectedEventObj.seatGeekApiKey}&lat=${selectedEventObj.origLocationCoors.lat}&lon=${selectedEventObj.origLocationCoors.long}&range=${selectedEventObj.eventSearchRange}mi&datetime_local.gte=${selectedEventObj.eventSearchDate}&sort=datetime_local.asc&per_page=10&page=${paginateCounter}`
@@ -494,12 +484,10 @@ function paginateEventResults(responseJson){
 				function paginateLinkHandler(){
 					$('.paginate').on('click', (e)=>{
 						e.preventDefault()
-						console.log(e.target.textContent)
 
 						// SET PAGINATE-COUNTER TO LINK'S TEXT-CONTENT 
 						paginateCounter = Number(e.target.textContent)
 
-						console.log(paginateCounter)
 						disablePrevNextBtns()
 						
 						// MAKE GET-REQUEST TO CORRESPONDING NUMBER OF LINK
@@ -513,7 +501,6 @@ function paginateEventResults(responseJson){
 										throw new Error(response.statusText)
 									}
 								}).then(responseJson =>{
-									console.log('seatGeekPaginate', responseJson)
 									// EMPTY PREVIOUS RESULTS
 									$('.results').empty();
 							
@@ -534,15 +521,12 @@ function paginateEventResults(responseJson){
 				$('.next').on('click', (e)=>{
 					e.preventDefault()
 					
-					console.log(paginateCounter, totalLinks)
 					
 					// INCREMENT PAGINATE-COUNTER
 					paginateCounter = Number(paginateCounter + 1)
 					
 					disablePrevNextBtns()
-						
-					console.log(paginateCounter)
-					
+											
 					// MAKE GET-REQUEST TO NEXT PAGE 
 					let seatGeekPage = `https://api.seatgeek.com/2/events?client_id=${selectedEventObj.seatGeekApiKey}&lat=${selectedEventObj.origLocationCoors.lat}&lon=${selectedEventObj.origLocationCoors.long}&range=${selectedEventObj.eventSearchRange}mi&datetime_local.gte=${selectedEventObj.eventSearchDate}&sort=datetime_local.asc&per_page=10&page=${paginateCounter}`
 
@@ -626,12 +610,9 @@ function paginateZomatoResults(foodanddrink){
 	// PREV CLICK-HANDLER
 	$('.prev').on('click', (e)=>{	
 		e.preventDefault()
-		console.log(paginateCounter, totalLinks)
 		// DECREMENT PAGINATE-COUNTER BY 1 AND DISABLE PREV/NEXT BTNS IF NECESSARY
 		paginateCounter = Number(paginateCounter - 1)
 		disablePrevNextBtns(paginateCounter)
-
-		console.log(paginateCounter)
 
 		const headers = {
 				"headers": {
@@ -683,12 +664,10 @@ function paginateZomatoResults(foodanddrink){
 		
 		$('.paginate').on('click', (e)=>{
 			e.preventDefault()
-			console.log(e.target.textContent)
 
 			// SET PAGINATE-COUNTER TO LINK'S TEXT-CONTENT 
 			paginateCounter = Number(e.target.textContent)
 
-			console.log(paginateCounter)
 			disablePrevNextBtns(paginateCounter)
 
 			let zomatoSearchQuery = $('.yelp-queryString').val()
@@ -712,7 +691,6 @@ function paginateZomatoResults(foodanddrink){
 							throw new Error(response.statusText)
 						}
 					}).then(responseJson =>{
-						console.log('seatGeekPaginate', responseJson)
 						// EMPTY PREVIOUS RESULTS
 						$('.results').empty();
 				
@@ -733,14 +711,10 @@ function paginateZomatoResults(foodanddrink){
 	$('.next').on('click', (e)=>{
 		e.preventDefault()
 
-		console.log(paginateCounter, totalLinks)
-
 		// INCREMENT PAGINATE-COUNTER
 		paginateCounter = Number(paginateCounter + 1)
 
 		disablePrevNextBtns(paginateCounter)
-
-		console.log(paginateCounter)
 
 		let zomatoSearchQuery = $('.yelp-queryString').val()
 
@@ -809,7 +783,12 @@ function handleZomatoResults(foodanddrink){
 
 			let zomatoMenuURL = foodAndDrinkArr[i].restaurant.menu_url
 			let zomatoDetailsURL = foodAndDrinkArr[i].restaurant.url
-			let zomatoPrice = foodAndDrinkArr[i].restaurant.average_cost_for_two
+			
+			let zomatoPrice = `~$${foodAndDrinkArr[i].restaurant.average_cost_for_two}`        
+            if (zomatoPrice === '~$0'){
+				zomatoPrice = '<i>N/A</i>'
+			}			
+			
 			let zomatoRatings = foodAndDrinkArr[i].restaurant.user_rating.aggregate_rating
 			let zomatoRatingsText = foodAndDrinkArr[i].restaurant.user_rating.rating_text
 			let zomatoID = foodAndDrinkArr[i].restaurant.R.res_id
@@ -861,15 +840,14 @@ function handleZomatoResults(foodanddrink){
 						hideLoader()
 					}
 				}).then(resID =>{
-					console.log('RESid: ', resID)
 					hideLoader()
 							
 					let zomatoRatings = `Ratings: ${resID.user_rating.aggregate_rating}/5`
-					
+
 					if (resID.user_rating.aggregate_rating === 0){
-						zomatoRatings = resID.user_rating.rating_text
+						zomatoRatings = `<i>${resID.user_rating.rating_text}</i>`
 					}
-				
+
 					selectedEventObj.restaurantRatings = zomatoRatings
 
 					let zomatoIMG2 = resID.featured_image
@@ -924,7 +902,7 @@ function handleZomatoResults(foodanddrink){
 								</div>
 								 <span class="zomato-price">
 									<i class="fas fa-money-bill"></i>
-									<strong>~$${zomatoPrice}</strong>
+									<strong>Price x 2: <span class="eventCostVal">${zomatoPrice}</span></strong>
 								</span>
 
 								<div class="result-btns-wrapper">
@@ -958,6 +936,27 @@ function handleZomatoResults(foodanddrink){
 					})
 				}
 			}
+}
+
+// DATE-SETTER FUNCTION 
+function dateSetter(){
+	let currentDate = new Date()
+	let currentMonth = (currentDate.getMonth()+1).toString()
+
+	if (currentMonth.length < 2){
+		currentMonth = `0${currentMonth}`     
+	} 
+
+	let currentDay = currentDate.getDate().toString()
+
+	if (currentDay.length < 2){
+		currentDay = `0${currentDay}`     
+	} 
+
+	let currentYear = (currentDate.getYear()+1900).toString()
+	let today = `${currentMonth}/${currentDay}/${currentYear}`
+
+	$('#date').val(today)
 }
 		
 // NAV-BAR-HANDLERS
@@ -1010,11 +1009,13 @@ function navBarHandlers(){
 
 // CLICK-AND-SUBMIT-HANDLERS
 function clickAndSubmitHandlers(){
-	// START-BTN
-	$('main').on('click', '.start-btn', (e)=>{
-			appendPage(selectedEventObj.history[selectedEventObj.historyCounter])
-			geoLocate()
-		})
+
+// START-BTN
+$('main').on('click', '.start-btn', (e)=>{
+	appendPage(selectedEventObj.history[selectedEventObj.historyCounter])
+	geoLocate()
+	dateSetter()     
+})
 
 	// EVENT-SEARCH-SUBMIT
 	$('main').on('submit', '.event-search-form', (e)=>{
@@ -1024,8 +1025,6 @@ function clickAndSubmitHandlers(){
 		
 			let locationInput = $('.e-search').val()
 			
-			if (locationInput )
-
 			// CLEAR ANY RESULTS FROM PREVIOUS SEARCH
 			$('.results').empty();
 			$('.no-results').empty();
@@ -1087,7 +1086,6 @@ function clickAndSubmitHandlers(){
 							throw new Error(response.statusText)
 						}
 					}).then(coors =>{
-						console.log(coors)
 						
 						// STORE NEW EVENT-LOCATION COORDINATES IN SELECTED-EVENT-OBJ 
 						selectedEventObj.origLocationCoors.lat = coors.results[0].geometry.location.lat
@@ -1104,7 +1102,6 @@ function clickAndSubmitHandlers(){
 									throw new Error(response.statusText)
 								}
 							}).then(responseJson =>{
-								console.log('SeatGeekGeoAPI Search Results:', responseJson)
 
 								hideLoader();
 
@@ -1129,7 +1126,6 @@ function clickAndSubmitHandlers(){
 							throw new Error(response.statusText)
 						}
 					}).then(responseJson =>{
-						console.log('SeatGeekAPI Search Results:', responseJson)
 
 						hideLoader();
 
@@ -1174,9 +1170,7 @@ function clickAndSubmitHandlers(){
 			}).then(event =>{	
 
 				hideLoader();
-			
-				console.log('Event Lookup By ID:', event)
-				
+							
 				// STORE EVENT-IMG IN SELECTED-EVENT-OBJ
 				selectedEventObj.eventIMG = event.performers[0].image
 			
@@ -1211,8 +1205,6 @@ function clickAndSubmitHandlers(){
 						lat: event.venue.location.lat,
 						long: event.venue.location.lon
 					}
-
-					console.log('selectedEventObj after Event-Selected:', selectedEventObj)
 					
 					// MOVE USER TO NEXT-PAGE (RESTAURANT-SELECT/SEARCH PAGE) AND SET LOCATION INPUT TO SELECTED-EVENT'S LOCATION
 					appendPage(foodAndDrinksPageGenerator());		
@@ -1279,7 +1271,6 @@ function clickAndSubmitHandlers(){
 						throw new Error(response.statusText)
 					}
 				}).then(coors =>{
-					console.log(coors)
 					let newLocationLat = coors.results[0].geometry.location.lat
 					let newLocationLng = coors.results[0].geometry.location.lng
 					
@@ -1322,7 +1313,6 @@ function clickAndSubmitHandlers(){
 							
 							}
 						}).then(foodanddrink =>{
-							console.log(foodanddrink)
 							hideLoader();
 
 							handleZomatoResults(foodanddrink)		
@@ -1375,8 +1365,6 @@ function clickAndSubmitHandlers(){
 					}
 				}).then(resDetails =>{
 				
-					console.log('ZomatoAPI lookup by ID:', resDetails)
-
 					let zomatoLong = resDetails.location.longitude
 					let zomatoLat = resDetails.location.latitude
 
@@ -1441,10 +1429,10 @@ function clickAndSubmitHandlers(){
 
 											<div class="cost-unfold unfold">
 												<span class="event-tickets">
-												<span class="names">1. ${selectedEventObj.eventName}</span>: <span class="costVal">$${selectedEventObj.eventCost}</span></span>
+												<span class="names">1. ${selectedEventObj.eventName}</span>: <span class="costVal finalEventCost">$${selectedEventObj.eventCost}</span></span>
 
 												<span class="dinner-price">
-													<span class="names">2. ${selectedEventObj.restaurantName}</span>: <span class="costVal">$${selectedEventObj.restaurantCost}</span></span>
+													<span class="names">2. ${selectedEventObj.restaurantName}</span>: <span class="costVal finalRestaurantCost">$${selectedEventObj.restaurantCost}</span></span>
 													<span class="total-cost">Total: <span class="costVal">$${Number(selectedEventObj.eventCost + selectedEventObj.restaurantCost).toFixed(2)}</span></span>
 												</div>
 											</div>
@@ -1554,7 +1542,6 @@ function clickAndSubmitHandlers(){
 											</div>	
 
 										</div>
-
 											`
 								// APPEND FINAL-PAGE
 								appendPage(finalPageHTML)
@@ -1568,6 +1555,15 @@ function clickAndSubmitHandlers(){
 								$('.restaurant-name').hide()
 								$('.fa-angle-double-up').hide()
 						
+								// IF EVENT-COST OR RESTAURANT-COST N/A HANDLER
+								if (selectedEventObj.eventCost === 0){
+									$('.finalEventCost').html('N/A')
+								}								
+						
+								if (selectedEventObj.restaurantCost === 0){
+									$('.finalRestaurantCost').html('N/A')
+								}
+						
 
 								// CHECK THRU ALL EVENT-IMG AND ZOMATO-IMG AND IF IMAGE IS NOT AVAILABLE, REPLACE IMGS WITH "IMAGE NOT AVAILABLE" TEXT
 								let zomatoIMGArr = $('.zomato-img')
@@ -1576,9 +1572,9 @@ function clickAndSubmitHandlers(){
 											if(!zomatoIMGArr[i].src.includes('zmtcdn') && selectedEventObj.restaurantIMG2 === ''){
 												zomatoIMGArr[i].parentNode.append('image not available')
 												zomatoIMGArr[i].remove()
-											} else if (!imgArr[i].src.includes('zmtcdn') && selectedEventObj.restaurantIMG2 !== '') {
-												imgArr[i].parentNode.append(selectedEventObj.restaurantIMG2)
-												imgArr[i].remove()
+											} else if (!zomatoIMGArr[i].src.includes('zmtcdn') && selectedEventObj.restaurantIMG2 !== '') {
+												zomatoIMGArr[i].parentNode.append(selectedEventObj.restaurantIMG2)
+												zomatoIMGArr[i].remove()
 										}
 										}
 
@@ -1590,8 +1586,6 @@ function clickAndSubmitHandlers(){
 												eventIMGArr[i].remove()
 											}
 										}
-
-								console.log('selectedEventObj final:', selectedEventObj)
 							})
 						})
 	})
