@@ -36,11 +36,11 @@ The Perfect Date App allows you to plan, and keep track of all the logistics and
 
 #### Summary Page:
 
-![summary page costview](date-summary-page-costview.png)
+![summary page costview](images/date-summary-page-costview.png)
 
-![summary page eventview](date-summary-page-eventview.png)
+![summary page eventview](images/date-summary-page-eventview.png)
 
-![summary page restaurantview](date-summary-page-restaurantview.png)
+![summary page restaurantview](images/date-summary-page-restaurantview.png)
 
 # How To Use
 
