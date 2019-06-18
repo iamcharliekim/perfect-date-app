@@ -16,31 +16,31 @@ The Perfect Date App allows you to plan, and keep track of all the logistics and
 
 #### Landing Page:
 
-![landing page](images/perfectdateSS- landingPage.png)
+![landing page](images/perfect-date-landing-page.png)
 
 #### Event Search:
 
-![event search](images/perfect-date - eventSearch .png)
+![event search](images/event-search-page.png)
 
 #### Event Search Result Cards:
 
-![event search results](images/perfect-date - eventSearch Results.png)
+![event search results](images/event-search-results.png)
 
 #### Restaurant Search:
 
-![restaurant search](images/perfectdateSS- restaurantSearchPage.png)
+![restaurant search](images/restaurant-search-page.png)
 
 #### Restaurant Search Result Cards:
 
-![restaurant search results](images/perfectdateSS-restaurantResults.png)
+![restaurant search results](images/restaurant-search-results.png)
 
 #### Summary Page:
 
-![summary page costview](perfect-date - finalPage Costview.png)
+![summary page costview](date-summary-page-costview.png)
 
-![summary page eventview](perfect-date - finalPage Eventview.png)
+![summary page eventview](date-summary-page-eventview.png)
 
-![summary page restaurantview](perfect-date - finalPage Restaurantview.png)
+![summary page restaurantview](date-summary-page-restaurantview.png)
 
 # How To Use
 
