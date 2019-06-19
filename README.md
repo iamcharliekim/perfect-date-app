@@ -4,8 +4,6 @@
 
 ### Demo: https://iamcharliekim.github.io/perfect-date-app/
 
-### GitHub: https://github.com/iamcharliekim/perfect-date-app
-
 The Perfect Date App allows you to plan, and keep track of all the logistics and details that go into the perfect date by utilizing multiple APIs (Seat Geek API, Google GeoCode API, Zomato API) to help users search and find local entertainment and restaurants within walking distance.
 
   - Users can search local events based on location, range, and date
