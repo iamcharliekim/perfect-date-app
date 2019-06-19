@@ -24,7 +24,7 @@ The Perfect Date App allows you to plan, and keep track of all the logistics and
 
 #### Event Search Result Cards:
 
-![event search results](images/page2-event-results.png)
+![event search results](images/page3-event-results.png)
 
 #### Restaurant Search:
 
