@@ -2,9 +2,7 @@
 
 [![Build Status](https://travis-ci.org/joemccann/dillinger.svg?branch=master)](https://travis-ci.org/joemccann/dillinger)
 
-Demo: https://iamcharliekim.github.io/perfect-date-app/
-
-GitHub: https://github.com/iamcharliekim/perfect-date-app
+### Demo: https://iamcharliekim.github.io/perfect-date-app/
 
 The Perfect Date App allows you to plan, and keep track of all the logistics and details that go into the perfect date by utilizing multiple APIs (Seat Geek API, Google GeoCode API, Zomato API) to help users search and find local entertainment and restaurants within walking distance.
 
@@ -16,31 +14,32 @@ The Perfect Date App allows you to plan, and keep track of all the logistics and
 
 #### Landing Page:
 
-![landing page](images/perfectdateSS- landingPage.png)
+<img src="images/page1-landing.png" alt="drawing" width="300"/>
 
 #### Event Search:
 
-![event search](images/perfect-date - eventSearch .png)
+<img src="images/page2-event-search.png" alt="drawing" width="300"/>
 
 #### Event Search Result Cards:
 
-![event search results](images/perfect-date - eventSearch Results.png)
+<img src="images/page3-event-results.png" alt="drawing" width="300"/>
 
 #### Restaurant Search:
 
-![restaurant search](images/perfectdateSS- restaurantSearchPage.png)
+<img src="images/page4-restaurant-search.png" alt="drawing" width="300"/>
 
 #### Restaurant Search Result Cards:
 
-![restaurant search results](images/perfectdateSS-restaurantResults.png)
+<img src="images/page5-restaurant-results.png" alt="drawing" width="300"/>
 
 #### Summary Page:
 
-![summary page costview](perfect-date - finalPage Costview.png)
 
-![summary page eventview](perfect-date - finalPage Eventview.png)
+<img src="images/page6-summary-costview.png" alt="drawing" width="300"/>
 
-![summary page restaurantview](perfect-date - finalPage Restaurantview.png)
+<img src="images/page6-summary-eventview.png" alt="drawing" width="300"/>
+
+<img src="images/page6-summary-restaurantview.png" alt="drawing" width="300"/>
 
 # How To Use
 
