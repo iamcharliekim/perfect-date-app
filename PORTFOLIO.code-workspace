@@ -1,0 +1,24 @@
+{
+  "folders": [
+	{
+		"path": "../rhcp-quizz-app"
+	},
+	{
+		"path": "."
+	},
+	{
+		"path": "../metrocleaners-app"
+	},
+	{
+		"path": "../post-up-app"
+	}
+],
+  "settings": {
+	"liveServer.settings.multiRootWorkspaceName": "perfect-date-app",
+	"javascript.preferences.quoteStyle": "single",
+	"typescript.preferences.quoteStyle": "single",
+	"prettier.singleQuote": true,
+	"prettier.htmlWhitespaceSensitivity": "ignore",
+	"prettier.jsxSingleQuote": true
+  }
+}
